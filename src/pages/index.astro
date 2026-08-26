@@ -334,7 +334,7 @@ const faqSchema = {
         <h2 class="display mt-5 text-[clamp(3rem,6vw,5.8rem)]">En el centro de múltiples recorridos.</h2>
         <p class="mt-6 leading-7 text-black/62">{siteInfo.address}</p>
         <p class="mt-3 text-sm text-black/55">Coordenadas: {siteInfo.latitude.toFixed(6)}, {siteInfo.longitude.toFixed(6)}</p>
-        <a href={siteInfo.mapsUrl} target="_blank" rel="noopener noreferrer" class="mt-7 inline-flex rounded-full bg-ink px-5 py-3 text-sm font-bold text-white hover:bg-cobalt">Abrir en Google Maps ↗</a>
+        <a href={siteInfo.mapsUrl} target="_blank" rel="noopener noreferrer" class="mt-7 inline-flex rounded-full bg-ink px-5 py-3 text-sm font-bold text-white hover:bg-cobalt" style="color: #ffffff !important;">Abrir en Google Maps ↗</a>
       </div>
       <div class="overflow-hidden rounded-[1.5rem] border border-black/10 bg-white shadow-[0_25px_80px_rgba(23,33,31,.12)]">
         <iframe
