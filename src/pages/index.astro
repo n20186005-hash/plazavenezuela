@@ -12,20 +12,23 @@ const days = [
   'https://schema.org/Sunday'
 ];
 
-const placeId = Astro.site ? new URL('/#plaza-venezuela', Astro.site).href : '#plaza-venezuela';
-const pageUrl = Astro.site ? new URL('/', Astro.site).href : undefined;
+const siteUrl = 'https://plazavenezuela.org';
+const attractionId = `${siteUrl}/#attraction`;
+const websiteId = `${siteUrl}/#website`;
+const webpageId = `${siteUrl}/#webpage`;
 
 const placeSchema = {
-  '@id': placeId,
-  '@type': ['TouristAttraction', 'LocalBusiness'],
-  name: siteInfo.placeName,
-  description: siteInfo.description,
-  image: [siteInfo.photos.panorama.src, siteInfo.photos.fisicromia.src, siteInfo.photos.abraSolar.src],
+  '@id': attractionId,
+  '@type': ['TouristAttraction', 'LandmarkOrHistoricalBuilding', 'Park'],
+  name: 'Plaza Venezuela',
+  alternateName: ['Plaza Venezuela Caracas', 'Fuente de Plaza Venezuela'],
+  description: 'Plaza Venezuela is an iconic public square and urban park located in Los Caobos neighborhood, Caracas, Venezuela. Renowned for its giant illuminated music fountain and kinetic sculptures.',
+  url: siteUrl,
   isAccessibleForFree: true,
-  priceRange: 'Gratis',
+  publicAccess: true,
   address: {
     '@type': 'PostalAddress',
-    streetAddress: 'F4W7+MMM, Av. Casanova',
+    streetAddress: 'Av. Casanova',
     addressLocality: 'Caracas',
     postalCode: '1052',
     addressRegion: 'Distrito Capital',
@@ -36,6 +39,14 @@ const placeSchema = {
     latitude: siteInfo.latitude,
     longitude: siteInfo.longitude
   },
+  hasMap: siteInfo.mapsUrl,
+  sameAs: [
+    'https://www.wikidata.org/wiki/Q6079839',
+    'https://es.wikipedia.org/wiki/Plaza_Venezuela',
+    'https://en.wikipedia.org/wiki/Plaza_Venezuela',
+    'https://www.google.com/maps?cid=10051477241080980428'
+  ],
+  image: [siteInfo.photos.panorama.src, siteInfo.photos.fisicromia.src, siteInfo.photos.abraSolar.src],
   aggregateRating: {
     '@type': 'AggregateRating',
     ratingValue: siteInfo.rating,
@@ -48,8 +59,33 @@ const placeSchema = {
     dayOfWeek: days,
     opens: '06:00',
     closes: '21:00'
-  }],
-  ...(pageUrl ? { url: pageUrl } : {})
+  }]
+};
+
+const websiteSchema = {
+  '@type': 'WebSite',
+  '@id': websiteId,
+  url: siteUrl,
+  name: 'Plaza Venezuela Caracas Guide',
+  description: 'The definitive visitors guide to Plaza Venezuela in Caracas: musical fountain schedules, directions, history, and safety tips.',
+  inLanguage: 'en'
+};
+
+const webpageSchema = {
+  '@type': 'WebPage',
+  '@id': webpageId,
+  url: siteUrl,
+  name: 'Plaza Venezuela Caracas - Visitors & Fountain Guide',
+  isPartOf: {
+    '@id': websiteId
+  },
+  about: {
+    '@id': attractionId
+  },
+  mainEntity: {
+    '@id': attractionId
+  },
+  inLanguage: 'en'
 };
 
 const faqs = [
@@ -91,8 +127,68 @@ const faqSchema = {
 <BaseLayout
   title="Plaza Venezuela — guía cultural y práctica de Caracas"
   description="Historia, arte cinético, fuente, transporte, horarios, servicios y consejos para visitar Plaza Venezuela en Caracas. Guía independiente y sin fines de lucro."
-  structuredData={[placeSchema, faqSchema]}
 >
+  <script slot="head" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": ["TouristAttraction", "LandmarkOrHistoricalBuilding", "Park"],
+      "@id": "https://plazavenezuela.org/#attraction",
+      "name": "Plaza Venezuela",
+      "alternateName": ["Plaza Venezuela Caracas", "Fuente de Plaza Venezuela"],
+      "description": "Plaza Venezuela is an iconic public square and urban park located in Los Caobos neighborhood, Caracas, Venezuela. Renowned for its giant illuminated music fountain and kinetic sculptures.",
+      "url": "https://plazavenezuela.org",
+      "isAccessibleForFree": true,
+      "publicAccess": true,
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Av. Casanova",
+        "addressLocality": "Caracas",
+        "postalCode": "1052",
+        "addressRegion": "Distrito Capital",
+        "addressCountry": "VE"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 10.496718,
+        "longitude": -66.888403
+      },
+      "hasMap": "https://maps.app.goo.gl/PLYxNoYSnkFCp2Ye9",
+      "sameAs": [
+        "https://www.wikidata.org/wiki/Q6079839",
+        "https://es.wikipedia.org/wiki/Plaza_Venezuela",
+        "https://en.wikipedia.org/wiki/Plaza_Venezuela",
+        "https://www.google.com/maps?cid=10051477241080980428"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://plazavenezuela.org/#website",
+      "url": "https://plazavenezuela.org",
+      "name": "Plaza Venezuela Caracas Guide",
+      "description": "The definitive visitors guide to Plaza Venezuela in Caracas: musical fountain schedules, directions, history, and safety tips.",
+      "inLanguage": "en"
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://plazavenezuela.org/#webpage",
+      "url": "https://plazavenezuela.org",
+      "name": "Plaza Venezuela Caracas - Visitors & Fountain Guide",
+      "isPartOf": {
+        "@id": "https://plazavenezuela.org/#website"
+      },
+      "about": {
+        "@id": "https://plazavenezuela.org/#attraction"
+      },
+      "mainEntity": {
+        "@id": "https://plazavenezuela.org/#attraction"
+      },
+      "inLanguage": "en"
+    }
+  ]
+}
+  </script>
   <section class="relative isolate min-h-[76vh] overflow-hidden bg-ink text-white">
     <img
       src={siteInfo.photos.panorama.src}
