@@ -1,0 +1,14 @@
+{
+  "name": "Guía Plaza Venezuela",
+  "short_name": "Plaza Venezuela",
+  "description": "Guía cultural y práctica independiente sobre Plaza Venezuela, Caracas.",
+  "lang": "es-VE",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f0e7",
+  "theme_color": "#17211f",
+  "icons": [
+    { "src": "/favicons/favicon-32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "/favicons/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

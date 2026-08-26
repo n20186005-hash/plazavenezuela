@@ -1,0 +1,30 @@
+---
+import Logo from './Logo.astro';
+---
+<footer class="mt-24 bg-ink text-white">
+  <div class="kinetic-rule"></div>
+  <div class="site-shell grid gap-12 py-14 md:grid-cols-[.85fr_1.15fr]">
+    <div>
+      <Logo light />
+      <p class="mt-7 max-w-md text-sm leading-7 text-white/70">
+        Proyecto independiente y sin fines de lucro para comprender el patrimonio urbano, el arte público y la experiencia de visita de Plaza Venezuela.
+      </p>
+    </div>
+    <div class="grid gap-8 text-sm md:grid-cols-2">
+      <div>
+        <p class="mb-3 font-bold uppercase tracking-[.14em] text-white/50">Información legal</p>
+        <nav class="flex flex-col gap-2" aria-label="Enlaces legales">
+          <a class="hover:underline" href="/privacidad/">Política de privacidad</a>
+          <a class="hover:underline" href="/terminos/">Términos de servicio</a>
+          <a class="hover:underline" href="/cookies/">Configuración de cookies</a>
+        </nav>
+      </div>
+      <div class="space-y-3 leading-6 text-white/70">
+        <p>Este sitio es una guía independiente y sin fines de lucro para visitantes; no está afiliado a ninguna institución gubernamental ni organización oficial.</p>
+        <p>La información de contexto se contrasta con fuentes públicas de la Alcaldía de Caracas (Municipio Bolivariano Libertador), el Instituto Municipal de Turismo de Caracas (IMTUR) y el Ministerio del Poder Popular para el Turismo (MINTUR). No contiene recomendaciones comerciales.</p>
+        <p>Derechos de imagen: las fotografías pertenecen a sus respectivos autores y se utilizan conforme a las licencias indicadas.</p>
+        <p>© 2026 Guía Plaza Venezuela. Todos los derechos reservados sobre el diseño y los contenidos originales.</p>
+      </div>
+    </div>
+  </div>
+</footer>

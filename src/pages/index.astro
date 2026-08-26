@@ -1,0 +1,380 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteInfo } from '../data/site';
+
+const days = [
+  'https://schema.org/Monday',
+  'https://schema.org/Tuesday',
+  'https://schema.org/Wednesday',
+  'https://schema.org/Thursday',
+  'https://schema.org/Friday',
+  'https://schema.org/Saturday',
+  'https://schema.org/Sunday'
+];
+
+const placeId = Astro.site ? new URL('/#plaza-venezuela', Astro.site).href : '#plaza-venezuela';
+const pageUrl = Astro.site ? new URL('/', Astro.site).href : undefined;
+
+const placeSchema = {
+  '@id': placeId,
+  '@type': ['TouristAttraction', 'LocalBusiness'],
+  name: siteInfo.placeName,
+  description: siteInfo.description,
+  image: [siteInfo.photos.panorama.src, siteInfo.photos.fisicromia.src, siteInfo.photos.abraSolar.src],
+  isAccessibleForFree: true,
+  priceRange: 'Gratis',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'F4W7+MMM, Av. Casanova',
+    addressLocality: 'Caracas',
+    postalCode: '1052',
+    addressRegion: 'Distrito Capital',
+    addressCountry: 'VE'
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: siteInfo.latitude,
+    longitude: siteInfo.longitude
+  },
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: siteInfo.rating,
+    ratingCount: siteInfo.ratingCount,
+    bestRating: 5,
+    worstRating: 1
+  },
+  openingHoursSpecification: [{
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: days,
+    opens: '06:00',
+    closes: '21:00'
+  }],
+  ...(pageUrl ? { url: pageUrl } : {})
+};
+
+const faqs = [
+  {
+    q: '¿La entrada a Plaza Venezuela es gratuita?',
+    a: 'Sí. Es un espacio público y no requiere boleto de entrada. El transporte, el estacionamiento y cualquier consumo en los alrededores se pagan por separado.'
+  },
+  {
+    q: '¿Cuál es el horario de Plaza Venezuela?',
+    a: 'Las referencias de ubicación consultadas muestran un horario habitual de 6:00 a 21:00 para la fuente y la plaza. La operación de la fuente, los eventos y algunos accesos pueden variar; conviene comprobar las condiciones del día antes de ir.'
+  },
+  {
+    q: '¿Cómo se llega en Metro?',
+    a: 'La estación Plaza Venezuela es el acceso más directo. Es un nodo de conexión de las líneas 1 y 3, con enlace hacia la Línea 4 por Zona Rental. Utiliza las salidas señalizadas hacia Plaza Venezuela y la fuente.'
+  },
+  {
+    q: '¿Hay baños públicos?',
+    a: 'En el entorno inmediato se han incorporado sanitarios públicos en áreas recreativas adyacentes. Su disponibilidad y horario pueden cambiar, por lo que es recomendable confirmar el acceso al llegar.'
+  },
+  {
+    q: '¿Cuánto tiempo conviene dedicar a la visita?',
+    a: 'Entre 45 y 90 minutos permiten recorrer la fuente y las principales obras de arte público. Si se combina con Los Caobos, el Jardín Botánico, la Ciudad Universitaria o Sabana Grande, conviene reservar de dos a tres horas.'
+  },
+  {
+    q: '¿Cuál es el mejor momento para visitar?',
+    a: 'La tarde ofrece buena luz para apreciar el arte cinético; el inicio de la noche permite ver la iluminación de la fuente cuando está operativa. Para una lectura más detallada de las obras, la luz diurna es preferible.'
+  }
+];
+
+const faqSchema = {
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a }
+  }))
+};
+---
+<BaseLayout
+  title="Plaza Venezuela — guía cultural y práctica de Caracas"
+  description="Historia, arte cinético, fuente, transporte, horarios, servicios y consejos para visitar Plaza Venezuela en Caracas. Guía independiente y sin fines de lucro."
+  structuredData={[placeSchema, faqSchema]}
+>
+  <section class="relative isolate min-h-[76vh] overflow-hidden bg-ink text-white">
+    <img
+      src={siteInfo.photos.panorama.src}
+      alt={siteInfo.photos.panorama.alt}
+      class="absolute inset-0 h-full w-full object-cover opacity-65"
+      fetchpriority="high"
+      referrerpolicy="no-referrer"
+    />
+    <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(16,28,26,.88)_0%,rgba(16,28,26,.5)_52%,rgba(16,28,26,.22)_100%)]"></div>
+    <div class="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-ink/85 to-transparent"></div>
+    <div class="site-shell relative flex min-h-[76vh] items-end pb-14 pt-36">
+      <div class="max-w-4xl">
+        <span class="eyebrow text-sun">Caracas · El Recreo</span>
+        <h1 class="display mt-5 max-w-4xl text-[clamp(4.1rem,10vw,9rem)]">Plaza<br />Venezuela</h1>
+        <p class="mt-7 max-w-2xl text-lg leading-8 text-white/82 md:text-xl">
+          Una puerta urbana a la Caracas moderna: agua, color y movimiento reunidos alrededor de uno de los nodos culturales y de movilidad más reconocibles de la capital.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3 text-sm">
+          <span class="rounded-full border border-white/30 bg-black/20 px-4 py-2 backdrop-blur">★ {siteInfo.rating} · {siteInfo.ratingCount.toLocaleString('es-VE')} reseñas</span>
+          <span class="rounded-full border border-white/30 bg-black/20 px-4 py-2 backdrop-blur">Acceso gratuito</span>
+          <span class="rounded-full border border-white/30 bg-black/20 px-4 py-2 backdrop-blur">Horario de referencia: {siteInfo.hours}</span>
+        </div>
+      </div>
+    </div>
+    <div class="absolute right-0 top-24 hidden h-[64%] w-28 overflow-hidden lg:block" aria-hidden="true">
+      <div class="h-full w-full bg-[repeating-linear-gradient(90deg,transparent_0_10px,#f2b544_10px_15px,transparent_15px_24px,#d95d48_24px_29px,transparent_29px_38px,#1a85be_38px_43px)] opacity-75 [transform:skewX(-12deg)]"></div>
+    </div>
+  </section>
+
+  <section class="site-shell -mt-1 grid border-x border-b border-black/10 bg-paper md:grid-cols-4">
+    {[
+      ['1940', 'Inauguración de la plaza'],
+      ['1982', 'Arte cinético emblemático'],
+      ['2009', 'Nueva etapa de la fuente'],
+      ['Hoy', 'Nodo cultural y de transporte']
+    ].map(([big, small]) => (
+      <div class="border-b border-black/10 p-6 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0">
+        <strong class="display block text-4xl">{big}</strong>
+        <span class="mt-2 block text-xs font-bold uppercase tracking-[.1em] text-black/55">{small}</span>
+      </div>
+    ))}
+  </section>
+
+  <section id="historia" class="site-shell grid gap-12 py-24 lg:grid-cols-[.82fr_1.18fr] lg:gap-20">
+    <div>
+      <span class="eyebrow text-cobalt">Historia urbana</span>
+      <h2 class="display mt-5 text-[clamp(3.1rem,6vw,6.6rem)]">Una plaza que ayudó a explicar la Caracas moderna.</h2>
+    </div>
+    <div class="space-y-6 text-[1.05rem] leading-8 text-black/70">
+      <p>
+        Inaugurada en 1940, Plaza Venezuela quedó situada en el eje de expansión de Caracas hacia el este. No funciona únicamente como una plaza tradicional: es a la vez paseo peatonal, distribuidor vial, punto de referencia y antesala de varios conjuntos culturales y universitarios de la ciudad.
+      </p>
+      <p>
+        Su identidad actual se construyó por capas. A la fuente monumental se sumaron obras que convirtieron el entorno en una pequeña lección de arte venezolano al aire libre. <strong class="text-ink">Abra Solar</strong>, de Alejandro Otero, y la <strong class="text-ink">Fisicromía — Homenaje a Don Andrés Bello</strong>, de Carlos Cruz-Díez, enlazan la plaza con la tradición cinética venezolana del siglo XX.
+      </p>
+      <p>
+        Entre 2007 y 2009 se ejecutó una rehabilitación integral del conjunto y de sus obras. La versión de la fuente puesta en servicio en 2009 incorporó control de iluminación y recursos sonoros, reforzando el carácter nocturno del lugar. En años recientes, el entorno ha seguido incorporando áreas de estancia, servicios públicos y nueva infraestructura de transporte.
+      </p>
+      <aside class="mt-8 border-l-4 border-sun bg-white p-6 text-sm leading-7 shadow-[0_18px_60px_rgba(23,33,31,.08)]">
+        <strong class="block text-base text-ink">Cómo leer la plaza</strong>
+        No busques un único “monumento principal”. El interés está en la relación entre circulación, paisaje, fuente, arquitectura y arte cinético: una composición urbana que cambia según la luz, el movimiento del visitante y la actividad de la ciudad.
+      </aside>
+    </div>
+  </section>
+
+  <section id="arte" class="bg-ink py-24 text-white">
+    <div class="site-shell">
+      <div class="max-w-3xl">
+        <span class="eyebrow text-sun">Arte en movimiento</span>
+        <h2 class="display mt-5 text-[clamp(3.2rem,6.5vw,7rem)]">Dos maneras de hacer visible el tiempo.</h2>
+        <p class="mt-6 max-w-2xl text-lg leading-8 text-white/68">Otero trabaja con estructura, viento y reflejo. Cruz-Díez hace que el color se transforme a medida que cambia tu posición.</p>
+      </div>
+
+      <div class="mt-14 grid gap-8 lg:grid-cols-2">
+        <article class="group overflow-hidden border border-white/15 bg-white/5">
+          <div class="aspect-[4/3] overflow-hidden">
+            <img src={siteInfo.photos.abraSolar.src} alt={siteInfo.photos.abraSolar.alt} loading="lazy" class="h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]" referrerpolicy="no-referrer" />
+          </div>
+          <div class="p-7 md:p-9">
+            <span class="text-xs font-bold uppercase tracking-[.16em] text-sun">Alejandro Otero · 1982</span>
+            <h3 class="display mt-3 text-4xl">Abra Solar</h3>
+            <p class="mt-4 leading-7 text-white/68">Una gran estructura de aluminio concebida como obra cinética: sus elementos responden al viento y la luz. Más que una escultura estática, propone observar cómo el ambiente modifica lo que vemos.</p>
+            <p class="mt-5 text-xs text-white/45">Foto: {siteInfo.photos.abraSolar.author} · {siteInfo.photos.abraSolar.license} · {siteInfo.photos.abraSolar.source}</p>
+          </div>
+        </article>
+
+        <article class="group overflow-hidden border border-white/15 bg-white/5 lg:mt-20">
+          <div class="aspect-[4/3] overflow-hidden">
+            <img src={siteInfo.photos.fisicromia.src} alt={siteInfo.photos.fisicromia.alt} loading="lazy" class="h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]" referrerpolicy="no-referrer" />
+          </div>
+          <div class="p-7 md:p-9">
+            <span class="text-xs font-bold uppercase tracking-[.16em] text-coral">Carlos Cruz-Díez · 1982</span>
+            <h3 class="display mt-3 text-4xl">Fisicromía — Homenaje a Don Andrés Bello</h3>
+            <p class="mt-4 leading-7 text-white/68">El color deja de ser una superficie fija. Las franjas cromáticas producen lecturas distintas desde cada ángulo; caminar frente a la obra forma parte de la experiencia.</p>
+            <p class="mt-5 text-xs text-white/45">Foto: {siteInfo.photos.fisicromia.author} · {siteInfo.photos.fisicromia.license} · {siteInfo.photos.fisicromia.source}</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="visita" class="site-shell py-24">
+    <div class="grid gap-12 lg:grid-cols-[.78fr_1.22fr]">
+      <div>
+        <span class="eyebrow text-leaf">Planifica la visita</span>
+        <h2 class="display mt-5 text-[clamp(3rem,6vw,6rem)]">Lo práctico, sin venderte nada.</h2>
+        <p class="mt-6 max-w-md leading-7 text-black/62">La plaza está en un entorno central, denso y muy conectado. Los servicios cambian con la operación urbana; por eso distinguimos lo estable de lo que conviene confirmar el mismo día.</p>
+      </div>
+
+      <div class="grid gap-px overflow-hidden border border-black/10 bg-black/10 sm:grid-cols-2">
+        {[
+          ['Entrada / costo', 'Gratis', 'No hay boleto de acceso. Metro, estacionamiento y consumos son independientes.'],
+          ['Horario de referencia', '06:00–21:00', 'Google Maps indica cierre a las 21:00; otras referencias de la fuente muestran apertura a las 06:00. Verifica eventos y operación de la fuente.'],
+          ['Tiempo recomendado', '45–90 min', 'Para fuente, arte y fotografías. Reserva 2–3 h si enlazas con parques, universidad o Sabana Grande.'],
+          ['Mejor momento', 'Tarde + inicio de noche', 'La luz diurna ayuda a leer el arte; la iluminación de la fuente gana protagonismo después del atardecer cuando está operativa.'],
+          ['Baños', 'Disponibilidad en el entorno', 'Áreas públicas adyacentes incorporaron sanitarios. La apertura efectiva puede depender del horario y mantenimiento.'],
+          ['Accesibilidad', 'Entorno mayormente urbano', 'La estación y los cruces concentran flujos intensos. Prioriza salidas señalizadas, rampas disponibles y cruces peatonales formales.'],
+          ['Estacionamiento', 'Sin lote exclusivo de la plaza', 'Existen opciones reguladas y estacionamientos en el entorno. Revisa señalización, horario y tarifa antes de dejar el vehículo.'],
+          ['Seguridad urbana', 'Precauciones habituales', 'Es un nodo concurrido: mantén pertenencias controladas, evita obstaculizar cruces y consulta el estado del transporte antes del regreso.']
+        ].map(([title, strong, text]) => (
+          <article class="bg-paper p-6 md:p-7">
+            <p class="text-xs font-bold uppercase tracking-[.13em] text-black/45">{title}</p>
+            <strong class="display mt-3 block text-2xl">{strong}</strong>
+            <p class="mt-3 text-sm leading-6 text-black/60">{text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-[#e4ddd0] py-24">
+    <div class="site-shell">
+      <div class="max-w-3xl">
+        <span class="eyebrow text-coral">Servicios alrededor</span>
+        <h2 class="display mt-5 text-[clamp(3rem,6vw,6rem)]">Qué puedes resolver cerca.</h2>
+        <p class="mt-5 text-lg leading-8 text-black/62">Orientación por tipos de servicio, sin marcas ni recomendaciones comerciales.</p>
+      </div>
+      <div class="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        {[
+          ['WC y descanso', 'Busca los sanitarios públicos de las áreas recreativas adyacentes y equipamientos de transporte. Verifica acceso y horario al llegar.'],
+          ['Comida y bebida', 'En los ejes Casanova y Sabana Grande abundan panaderías, cafeterías, comida venezolana informal y opciones rápidas.'],
+          ['Alojamiento', 'El Recreo, Los Caobos y Sabana Grande concentran hoteles urbanos de distintas categorías con buena conexión al Metro.'],
+          ['Compras y víveres', 'Hay supermercados, minimercados, farmacias y comercios de conveniencia en los corredores peatonales y avenidas del entorno.'],
+          ['Combustible', 'Las estaciones de servicio se distribuyen en el tejido vial más amplio; conviene localizarlas en ruta antes de entrar al nodo de Plaza Venezuela.'],
+          ['Carga eléctrica', 'La infraestructura pública de carga para vehículos eléctricos no es un servicio propio de la plaza y su disponibilidad puede ser limitada o cambiante. Confirma un punto operativo antes del viaje.'],
+          ['Familias', 'El entorno recreativo renovado incorpora zona infantil; mantén supervisión constante porque la plaza está rodeada de vías de alto flujo.'],
+          ['Conectividad', 'Descarga mapa y ruta antes de entrar al Metro. La cobertura y los servicios de red pública no deben darse por garantizados en todo momento.']
+        ].map(([title, text], i) => (
+          <article class="relative overflow-hidden bg-white p-7 shadow-[0_15px_45px_rgba(23,33,31,.05)]">
+            <span class="absolute right-5 top-4 display text-5xl text-black/[.07]">0{i + 1}</span>
+            <h3 class="text-lg font-extrabold">{title}</h3>
+            <p class="mt-3 text-sm leading-7 text-black/60">{text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="como-llegar" class="site-shell py-24">
+    <div class="grid gap-14 lg:grid-cols-[.72fr_1.28fr]">
+      <div>
+        <span class="eyebrow text-cobalt">Transporte detallado</span>
+        <h2 class="display mt-5 text-[clamp(3rem,6vw,6rem)]">Llegar es parte de la historia del lugar.</h2>
+        <p class="mt-6 max-w-md leading-7 text-black/62">Plaza Venezuela funciona como nodo porque conecta Metro, autobuses, taxis, avenidas y recorridos peatonales. En horas punta, la opción más simple suele ser evitar conducir hasta el centro del distribuidor.</p>
+      </div>
+      <div class="space-y-4">
+        {[
+          ['Metro', 'La estación Plaza Venezuela es el acceso más directo. Conecta la Línea 1 con la Línea 3 y permite enlace con la Línea 4 a través de Zona Rental. Sigue la señalización hacia la plaza/fuente; las salidas también conectan con Sabana Grande, UCV y Jardín Botánico. El horario operativo del Metro puede cambiar, así que conviene consultarlo antes de salir.'],
+          ['Autobús y transporte superficial', 'El entorno de Zona Rental cuenta con un terminal de paso rápido que reorganiza rutas urbanas y suburbanas. Las rutas y tarifas pueden modificarse: identifica el andén y confirma destino con personal o señalización antes de abordar.'],
+          ['Desde el aeropuerto', 'Desde el Aeropuerto Internacional Simón Bolívar de Maiquetía (CCS), la plaza queda al otro lado del corredor metropolitano de Caracas. La alternativa más directa es transporte terrestre autorizado o taxi hasta Plaza Venezuela; si utilizas transporte colectivo, planifica un enlace hacia el centro y luego Metro o transporte urbano. El tiempo varía mucho con el tráfico.'],
+          ['Taxi / transporte por aplicación', 'Indica “Plaza Venezuela, Av. Casanova” y acuerda descenso en un borde vial seguro. Evita pedir que el vehículo se detenga en carriles de circulación o dentro de zonas de cruce intenso. Para el regreso nocturno, define el punto de recogida antes de alejarte de las áreas iluminadas.'],
+          ['A pie', 'Es razonable combinar la plaza caminando con Sabana Grande, Los Caobos, Jardín Botánico o la Ciudad Universitaria, pero el entorno incluye avenidas de alto flujo. Usa pasos y semáforos peatonales, y no cruces siguiendo trayectorias vehiculares del distribuidor.'],
+          ['En vehículo particular', 'La plaza no funciona como estacionamiento del visitante. Busca estacionamiento regulado o privado en el entorno y presta atención a los parquímetros y la señalización vigente. En horas de mayor demanda, el Metro suele evitar vueltas innecesarias por el distribuidor.']
+        ].map(([title, text], index) => (
+          <details class="group border-t border-black/15 py-5" open={index === 0}>
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-5 text-xl font-extrabold">
+              <span>{title}</span><span class="grid h-8 w-8 place-items-center rounded-full border border-black/20 text-lg group-open:rotate-45">+</span>
+            </summary>
+            <p class="max-w-3xl pt-4 leading-8 text-black/62">{text}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="alrededores" class="border-y border-black/10 bg-white py-24">
+    <div class="site-shell">
+      <div class="flex flex-col justify-between gap-7 lg:flex-row lg:items-end">
+        <div class="max-w-3xl">
+          <span class="eyebrow text-leaf">Alrededores</span>
+          <h2 class="display mt-5 text-[clamp(3rem,6vw,6rem)]">La visita continúa a pie.</h2>
+        </div>
+        <p class="max-w-md text-sm leading-7 text-black/58">Las distancias dependen de la salida del Metro y del cruce elegido. Aquí se priorizan espacios culturales, verdes y patrimoniales, no comercios.</p>
+      </div>
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+        {[
+          ['Boulevard de Sabana Grande', 'Paseo peatonal', 'Continuación natural hacia el este: vida urbana, arquitectura y gran flujo peatonal.'],
+          ['Parque Los Caobos', 'Área verde', 'Uno de los parques históricos del centro-este, útil para prolongar la caminata entre sombra y arte público.'],
+          ['Jardín Botánico de Caracas', 'Naturaleza y educación', 'Colecciones vegetales junto al campus universitario; confirma horarios de acceso antes de ir.'],
+          ['Ciudad Universitaria de Caracas', 'Patrimonio', 'Conjunto moderno reconocido por la UNESCO; respeta normas y condiciones de acceso del campus.'],
+          ['Complejo Cultural Teresa Carreño', 'Cultura', 'Gran complejo de artes escénicas en el corredor cultural próximo a Los Caobos y Parque Central.']
+        ].map(([name, type, text]) => (
+          <article class="border-t-4 border-ink bg-paper p-6">
+            <span class="text-[.68rem] font-bold uppercase tracking-[.14em] text-cobalt">{type}</span>
+            <h3 class="display mt-3 text-2xl">{name}</h3>
+            <p class="mt-4 text-sm leading-6 text-black/58">{text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="comer" class="site-shell py-24">
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-[.9fr_1.1fr]">
+      <div>
+        <span class="eyebrow text-coral">Comer cerca</span>
+        <h2 class="display mt-5 text-[clamp(3rem,6vw,5.6rem)]">Sabores urbanos, criterio neutral.</h2>
+      </div>
+      <div class="grid gap-5 sm:grid-cols-2">
+        {[
+          ['Desayuno y café', 'Panaderías y cafeterías de barrio son comunes en Casanova y Sabana Grande. Útiles para una visita temprana sin desviar mucho la ruta.'],
+          ['Comida venezolana', 'Busca establecimientos con menú del día, arepas, empanadas, pabellón y otras preparaciones locales; compara precios y condiciones antes de elegir.'],
+          ['Opciones rápidas', 'El entorno comercial ofrece comida informal y para llevar. Prioriza lugares con manipulación visible y conservación adecuada de alimentos.'],
+          ['Agua y calor', 'Caracas puede sentirse cálida al mediodía. Lleva agua o compra una bebida en comercio formal antes de una caminata larga por Los Caobos o el campus universitario.']
+        ].map(([title, text]) => (
+          <div class="border border-black/10 p-6">
+            <h3 class="font-extrabold">{title}</h3>
+            <p class="mt-3 text-sm leading-7 text-black/60">{text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="mapa" class="bg-mist py-24">
+    <div class="site-shell grid gap-10 lg:grid-cols-[.68fr_1.32fr] lg:items-center">
+      <div>
+        <span class="eyebrow text-cobalt">Ubicación</span>
+        <h2 class="display mt-5 text-[clamp(3rem,6vw,5.8rem)]">En el centro de múltiples recorridos.</h2>
+        <p class="mt-6 leading-7 text-black/62">{siteInfo.address}</p>
+        <p class="mt-3 text-sm text-black/55">Coordenadas: {siteInfo.latitude.toFixed(6)}, {siteInfo.longitude.toFixed(6)}</p>
+        <a href={siteInfo.mapsUrl} target="_blank" rel="noopener noreferrer" class="mt-7 inline-flex rounded-full bg-ink px-5 py-3 text-sm font-bold text-white hover:bg-cobalt">Abrir en Google Maps ↗</a>
+      </div>
+      <div class="overflow-hidden rounded-[1.5rem] border border-black/10 bg-white shadow-[0_25px_80px_rgba(23,33,31,.12)]">
+        <iframe
+          src={siteInfo.mapsEmbed}
+          width="600"
+          height="450"
+          class="aspect-[4/3] h-auto w-full border-0"
+          allowfullscreen
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+          title="Mapa de Plaza Venezuela en Caracas"
+        ></iframe>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="site-shell py-24">
+    <div class="grid gap-12 lg:grid-cols-[.62fr_1.38fr]">
+      <div>
+        <span class="eyebrow text-leaf">Preguntas frecuentes</span>
+        <h2 class="display mt-5 text-[clamp(3rem,6vw,5.5rem)]">Antes de ir.</h2>
+      </div>
+      <div>
+        {faqs.map((item, i) => (
+          <details class="group border-t border-black/15 py-6" open={i === 0}>
+            <summary class="flex cursor-pointer list-none items-start justify-between gap-6 text-lg font-extrabold">
+              <span>{item.q}</span><span class="mt-[-.2rem] text-3xl font-light group-open:rotate-45">+</span>
+            </summary>
+            <p class="max-w-3xl pt-4 leading-8 text-black/62">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="site-shell pb-10">
+    <div class="grid gap-8 border-y border-black/12 py-9 text-xs leading-6 text-black/50 md:grid-cols-[1fr_1fr_1fr]">
+      <p><strong class="text-ink">Fuentes de contexto:</strong> información pública municipal, fuentes culturales y turísticas venezolanas, documentación del conjunto urbano y referencias de transporte. Los horarios y operaciones pueden cambiar.</p>
+      <p><strong class="text-ink">Fotografía principal:</strong> {siteInfo.photos.panorama.author}, {siteInfo.photos.panorama.license}, {siteInfo.photos.panorama.source}. Las imágenes se cargan desde Wikimedia Commons respetando atribución y licencia.</p>
+      <p><strong class="text-ink">Criterio editorial:</strong> guía independiente, no comercial y de orientación general. Para decisiones críticas de viaje, confirma condiciones vigentes mediante canales oficiales.</p>
+    </div>
+  </section>
+</BaseLayout>

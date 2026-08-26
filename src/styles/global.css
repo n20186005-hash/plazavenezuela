@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: Georgia, "Times New Roman", serif;
+  --color-ink: #17211f;
+  --color-paper: #f4f0e7;
+  --color-cobalt: #146fa6;
+  --color-sun: #f2b544;
+  --color-coral: #d95d48;
+  --color-leaf: #4a7c59;
+  --color-mist: #d9e6e5;
+}
+
+:root {
+  color-scheme: light;
+  font-family: var(--font-sans);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  --page-pad: clamp(1rem, 3vw, 2.25rem);
+  --content: min(1180px, calc(100vw - var(--page-pad) * 2));
+}
+
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--color-paper); color: var(--color-ink); }
+body::selection { background: #17211f; color: #fff; }
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: .75rem;
+  transform: translateY(-180%);
+  z-index: 999;
+  padding: .7rem 1rem;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 10px 30px #0002;
+}
+.skip-link:focus { transform: translateY(0); }
+
+.site-shell { width: var(--content); margin-inline: auto; }
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  text-transform: uppercase;
+  letter-spacing: .17em;
+  font-size: .72rem;
+  font-weight: 800;
+}
+.eyebrow::before { content: ""; width: 2rem; height: 2px; background: currentColor; }
+.display { font-family: var(--font-display); letter-spacing: -.045em; line-height: .98; }
+
+.kinetic-rule {
+  height: 8px;
+  background: repeating-linear-gradient(90deg, #146fa6 0 8px, #f2b544 8px 16px, #d95d48 16px 24px, #17211f 24px 32px, #f4f0e7 32px 40px);
+  transform: skewX(-15deg);
+}
+
+.prose-page h1, .prose-page h2 { font-family: var(--font-display); letter-spacing: -.03em; }
+.prose-page h1 { font-size: clamp(2.3rem, 6vw, 4.7rem); line-height: .98; margin-bottom: 1.25rem; }
+.prose-page h2 { font-size: clamp(1.55rem, 3vw, 2.35rem); margin-top: 2.4rem; margin-bottom: .8rem; }
+.prose-page h3 { font-size: 1.05rem; margin-top: 1.5rem; font-weight: 800; }
+.prose-page p, .prose-page li { color: #3a4744; line-height: 1.78; }
+.prose-page ul { padding-left: 1.25rem; list-style: disc; }
+.prose-page a { text-decoration: underline; text-underline-offset: 3px; }
+
+.focus-ring:focus-visible, button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 3px solid #146fa6;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+}

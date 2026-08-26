@@ -1,0 +1,112 @@
+---
+import '../styles/global.css';
+import { siteInfo } from '../data/site';
+import Logo from '../components/Logo.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
+  noindex?: boolean;
+}
+
+const {
+  title = siteInfo.name,
+  description = siteInfo.description,
+  image = siteInfo.photos.panorama.src,
+  structuredData,
+  noindex = false
+} = Astro.props;
+
+const fullTitle = title === siteInfo.name ? title : `${title} | ${siteInfo.name}`;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const absoluteImage = Astro.site && image.startsWith('/') ? new URL(image, Astro.site).href : image;
+
+const webSiteNode = {
+  '@type': 'WebSite',
+  name: siteInfo.name,
+  description: siteInfo.description,
+  inLanguage: 'es-VE',
+  ...(canonical ? { url: canonical } : {})
+};
+
+const schemaPayload = structuredData
+  ? { '@context': 'https://schema.org', '@graph': [...(Array.isArray(structuredData) ? structuredData : [structuredData]), webSiteNode] }
+  : { '@context': 'https://schema.org', ...webSiteNode };
+---
+<!doctype html>
+<html lang="es-VE">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#17211f" />
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
+    <title>{fullTitle}</title>
+    {canonical && <link rel="canonical" href={canonical} />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:locale" content="es_VE" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    {absoluteImage && <meta property="og:image" content={absoluteImage} />}
+    <meta property="og:site_name" content={siteInfo.name} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" set:html={JSON.stringify(schemaPayload)}></script>
+    <script is:inline define:vars={{ GA_ID: siteInfo.ga4 }}>
+      const CONSENT_KEY = 'pv-cookie-preferences';
+      const loadAnalytics = () => {
+        window['ga-disable-' + GA_ID] = false;
+        if (document.querySelector('script[data-pv-ga]')) return;
+        const script = document.createElement('script');
+        script.async = true;
+        script.dataset.pvGa = 'true';
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+        document.head.appendChild(script);
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function(){ window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', GA_ID, { anonymize_ip: true });
+      };
+      const readConsent = () => {
+        try { return JSON.parse(localStorage.getItem(CONSENT_KEY) || '{}'); }
+        catch { return {}; }
+      };
+      const initialConsent = readConsent();
+      window['ga-disable-' + GA_ID] = initialConsent.analytics !== true;
+      if (initialConsent.analytics === true) loadAnalytics();
+      window.addEventListener('pv-consent-updated', (event) => {
+        const enabled = event.detail?.analytics === true;
+        window['ga-disable-' + GA_ID] = !enabled;
+        if (enabled) loadAnalytics();
+      });
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <header class="sticky top-0 z-40 border-b border-black/10 bg-paper/95 backdrop-blur">
+      <div class="site-shell flex min-h-18 items-center justify-between gap-6 py-3">
+        <Logo />
+        <nav class="hidden items-center gap-5 text-[.78rem] font-bold uppercase tracking-[.08em] lg:flex" aria-label="Navegación principal">
+          <a href="/#historia" class="hover:opacity-55">Historia</a>
+          <a href="/#arte" class="hover:opacity-55">Arte</a>
+          <a href="/#visita" class="hover:opacity-55">Planifica</a>
+          <a href="/#como-llegar" class="hover:opacity-55">Cómo llegar</a>
+          <a href="/#mapa" class="hover:opacity-55">Mapa</a>
+        </nav>
+        <a href="/#visita" class="rounded-full bg-ink px-4 py-2 text-xs font-bold uppercase tracking-[.08em] text-white hover:bg-cobalt">Guía de visita</a>
+      </div>
+    </header>
+    <main id="contenido">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
