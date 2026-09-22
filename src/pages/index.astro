@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { siteInfo } from '../data/site';
+import Weather from '../components/Weather.astro';
 
 const days = [
   'https://schema.org/Monday',
@@ -17,22 +18,38 @@ const attractionId = `${siteUrl}/#attraction`;
 const websiteId = `${siteUrl}/#website`;
 const webpageId = `${siteUrl}/#webpage`;
 
-const placeSchema = {
+const attractionSchema = {
   '@id': attractionId,
   '@type': ['TouristAttraction', 'LandmarkOrHistoricalBuilding', 'Park'],
   name: 'Plaza Venezuela',
-  alternateName: ['Plaza Venezuela Caracas', 'Fuente de Plaza Venezuela'],
-  description: 'Plaza Venezuela is an iconic public square and urban park located in Los Caobos neighborhood, Caracas, Venezuela. Renowned for its giant illuminated music fountain and kinetic sculptures.',
-  url: siteUrl,
+  alternateName: ['Plaza Venezuela', 'Caracas Plaza Venezuela', 'Plaza Venezuela Caracas', 'Fuente de Plaza Venezuela', 'Plaza Venezuela de Caracas', 'Plaza vzla', 'Plaza whats on Caracas', 'Plaza Venezuela en Caracas', 'Plaza de Venezuela', 'Plaza la Castellana Caracas'],
+  description: 'Guía completa del visitante a Plaza Venezuela en Caracas, Distrito Capital, Venezuela: historia, arte cinético, fuente, clima, rutas y consejos.',
+  url: `${siteUrl}/`,
+  image: [
+    siteInfo.photos.panorama.src,
+    siteInfo.photos.fisicromia.src,
+    siteInfo.photos.abraSolar.src
+  ],
   isAccessibleForFree: true,
   publicAccess: true,
+  telephone: siteInfo.phone,
+  identifier: {
+    '@type': 'PropertyValue',
+    name: 'Plus Code',
+    value: siteInfo.seo.plusCode
+  },
+  additionalProperty: [
+    { '@type': 'PropertyValue', name: 'Entrada', value: 'Gratuita' },
+    { '@type': 'PropertyValue', name: 'Horario habitual', value: siteInfo.hours },
+    { '@type': 'PropertyValue', name: 'Estación de Metro más cercana', value: siteInfo.seo.nearStation }
+  ],
   address: {
     '@type': 'PostalAddress',
-    streetAddress: 'Av. Casanova',
-    addressLocality: 'Caracas',
-    postalCode: '1052',
-    addressRegion: 'Distrito Capital',
-    addressCountry: 'VE'
+    streetAddress: siteInfo.streetAddress,
+    addressLocality: siteInfo.locality,
+    addressRegion: siteInfo.region,
+    postalCode: siteInfo.postalCode,
+    addressCountry: siteInfo.countryCode
   },
   geo: {
     '@type': 'GeoCoordinates',
@@ -41,12 +58,13 @@ const placeSchema = {
   },
   hasMap: siteInfo.mapsUrl,
   sameAs: [
+    siteInfo.mapsUrl,
+    siteInfo.govtTourismUrl,
     'https://www.wikidata.org/wiki/Q6079839',
     'https://es.wikipedia.org/wiki/Plaza_Venezuela',
     'https://en.wikipedia.org/wiki/Plaza_Venezuela',
     'https://www.google.com/maps?cid=10051477241080980428'
   ],
-  image: [siteInfo.photos.panorama.src, siteInfo.photos.fisicromia.src, siteInfo.photos.abraSolar.src],
   aggregateRating: {
     '@type': 'AggregateRating',
     ratingValue: siteInfo.rating,
@@ -65,17 +83,24 @@ const placeSchema = {
 const websiteSchema = {
   '@type': 'WebSite',
   '@id': websiteId,
-  url: siteUrl,
-  name: 'Plaza Venezuela Caracas Guide',
-  description: 'The definitive visitors guide to Plaza Venezuela in Caracas: musical fountain schedules, directions, history, and safety tips.',
-  inLanguage: 'en'
+  url: `${siteUrl}/`,
+  name: 'Plaza Venezuela · Guía Turística Caracas',
+  alternateName: [
+    'Guía de Plaza Venezuela, Caracas',
+    'Plaza vzla',
+    'Plaza whats on Caracas',
+    'Plaza Venezuela Caracas Travel Guide'
+  ],
+  description: 'Guía independiente sin fines de lucro para visitar Plaza Venezuela en Caracas: ubicación exacta Av. Casanova (Plus Code F4W7+MMM), cómo llegar en Metro, historia de la fuente iluminada y obras de arte cinético.',
+  inLanguage: 'es-VE'
 };
 
 const webpageSchema = {
   '@type': 'WebPage',
   '@id': webpageId,
-  url: siteUrl,
-  name: 'Plaza Venezuela Caracas - Visitors & Fountain Guide',
+  url: `${siteUrl}/`,
+  name: siteInfo.seo.title,
+  description: siteInfo.seo.description,
   isPartOf: {
     '@id': websiteId
   },
@@ -85,10 +110,27 @@ const webpageSchema = {
   mainEntity: {
     '@id': attractionId
   },
-  inLanguage: 'en'
+  inLanguage: 'es-VE',
+  breadcrumb: {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Plaza Venezuela', item: `${siteUrl}/` },
+      { '@type': 'ListItem', position: 2, name: 'Caracas', item: `${siteUrl}/#caracas` },
+      { '@type': 'ListItem', position: 3, name: 'Distrito Capital', item: `${siteUrl}/#distrito-capital` },
+      { '@type': 'ListItem', position: 4, name: 'Venezuela', item: `${siteUrl}/#venezuela` }
+    ]
+  }
 };
 
 const faqs = [
+  {
+    q: 'Where is Plaza Venezuela located?',
+    a: 'Plaza Venezuela is located in Caracas, Distrito Capital, Venezuela. The full address is F4W7+MMM, Av. Casanova, Caracas 1052, Distrito Capital, Venezuela.'
+  },
+  {
+    q: 'Is Plaza Venezuela free to visit?',
+    a: 'Yes, Plaza Venezuela is a public space and is free to visit year-round. No entrance ticket is required.'
+  },
   {
     q: '¿La entrada a Plaza Venezuela es gratuita?',
     a: 'Sí. Es un espacio público y no requiere boleto de entrada. El transporte, el estacionamiento y cualquier consumo en los alrededores se pagan por separado.'
@@ -123,10 +165,40 @@ const faqSchema = {
     acceptedAnswer: { '@type': 'Answer', text: item.a }
   }))
 };
+
+const structuredData = [attractionSchema, websiteSchema, webpageSchema, faqSchema];
+
+const pageTitle = siteInfo.seo.title;
+const pageDescription = siteInfo.seo.description;
+const pageKeywords = siteInfo.seo.keywords;
+const ogTitle = pageTitle;
+const ogDescription = pageDescription;
+const canonicalUrl = 'https://plazavenezuela.org/';
+
+const seasonalTableRows = [
+  ['1 月', '温暖干燥，日间 24–29°C', '旱季初，午后基本无雨', '短袖 + 薄外套（空调房）', '喷泉夜景、都市步行', '下午阳光柔和，光影长', '干季少雨，喷泉稳定', '防晒！1 月紫外线仍强'],
+  ['2 月', '偏热，偶达 30°C', '极少降雨，空气略干', '短袖 + 遮阳帽', 'Sabana Grande 步行街、Los Caobos', '日落偏早，黄金时刻紧凑', '喷泉表演人流高峰', '补水，建议早晚出游'],
+  ['3 月', '全年最热月份之一', '旱季尾声，雷雨极少', '轻薄吸汗、防晒全套', '清晨摄影 + 夜间喷泉', '清晨蓝天通透', '阿维拉山轮廓清晰，夜景好', '正午暴晒，儿童不宜久留'],
+  ['4 月', '热，开始转湿', '午后偶有雷阵雨（15:00-17:00）', '折叠伞 + 短袖', '上午户外、下午博物馆/购物', '雨后夕阳绝美', '喷泉 + 雨后霓虹', '雷雨来势快，随身带伞'],
+  ['5 月', '湿热，湿度上升', '雨季开始，午后阵雨概率高', '雨具 + 速干衣', '室内艺术走廊 + 喷泉夜景', '多云柔光，人像友好', '雨后空气通透，拍阿维拉好', '注意路面湿滑，儿童区域防滑'],
+  ['6 月', '持续湿热', '中到大雨常现，偶有短暴', '防水鞋 + 雨伞', '地铁站直达 + 午间室内休息', '云层厚，蓝天少', '夜景灯光反差大', '雷暴时远离金属雕塑'],
+  ['7 月', '湿季但略凉爽', '相对阵雨间歇长', '长袖薄衫（空调）+ 伞', '半日 plaza + 半日 Botánico', '云雾阿维拉，氛围感强', '夏季假期，家庭客流高', '周一/周二喷泉维护可能'],
+  ['8 月', '闷热回归', '午后阵雨概率高', '透气、吸汗、防晒', '早 8 点前逛完 + 夜游', '强烈顶光，避免 11-14 点拍', '夜游黄金档，人多热闹', '暑期人潮，看好小朋友'],
+  ['9 月', '典型湿季', '连续性降水常见', '雨具、防蚊液', '地铁直达 + 室内文化中心', '漫射光最柔，色彩准确', '雨中喷泉的氛围感摄影', '蚊虫在雨后增多'],
+  ['10 月', '湿季尾声，仍多雨', '降雨概率最高月之一', '防水背包 + 鞋', '躲雨时段：餐饮与商业走廊', '天光色温偏低，电影感', '长曝光拍雨丝与喷泉', '注意随身电子设备防潮'],
+  ['11 月', '干爽回归', '降雨锐减，天转晴', '短袖 + 薄外套', '全户外串联：Los Caobos + plaza', '黄金时刻变长', '喷泉夜景回稳，游客减少', '完美过渡季，首推出行月'],
+  ['12 月', '全年最佳天气', '几乎无雨、空气清新', '薄外套 + 防晒', '节日氛围广场、夜景、圣诞灯', '傍晚蓝调时间长', '年终庆典灯饰叠加喷泉', '圣诞周人多，提前到达']
+];
 ---
+
 <BaseLayout
-  title="Plaza Venezuela — guía cultural y práctica de Caracas"
-  description="Historia, arte cinético, fuente, transporte, horarios, servicios y consejos para visitar Plaza Venezuela en Caracas. Guía independiente y sin fines de lucro."
+  title={pageTitle}
+  description={pageDescription}
+  keywords={pageKeywords}
+  canonical={canonicalUrl}
+  image={siteInfo.photos.panorama.src}
+  imageAlt={`Plaza Venezuela en Caracas, Distrito Capital, Venezuela · Fuente luminosa y arte cinético`}
+  structuredData={structuredData}
 >
   <script slot="head" type="application/ld+json">
 {
@@ -136,17 +208,32 @@ const faqSchema = {
       "@type": ["TouristAttraction", "LandmarkOrHistoricalBuilding", "Park"],
       "@id": "https://plazavenezuela.org/#attraction",
       "name": "Plaza Venezuela",
-      "alternateName": ["Plaza Venezuela Caracas", "Fuente de Plaza Venezuela"],
-      "description": "Plaza Venezuela is an iconic public square and urban park located in Los Caobos neighborhood, Caracas, Venezuela. Renowned for its giant illuminated music fountain and kinetic sculptures.",
+      "alternateName": ["Plaza Venezuela", "Caracas Plaza Venezuela", "Plaza Venezuela Caracas", "Fuente de Plaza Venezuela", "Plaza Venezuela de Caracas"],
+      "description": "Guía completa del visitante a Plaza Venezuela en Caracas, Distrito Capital, Venezuela: historia, arte cinético, fuente, clima, rutas y consejos.",
       "url": "https://plazavenezuela.org",
+      "image": [
+        "https://upload.wikimedia.org/wikipedia/commons/1/17/Plaza_Venezuela%2C_Caracas._Venezuela.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/7/74/Doble_Fisicromia_de_Carlos_Cruz_Diez_Plaza_Venezuela.JPG",
+        "https://upload.wikimedia.org/wikipedia/commons/3/3d/Abra_Solar_Plaza_Venezuela.jpg"
+      ],
       "isAccessibleForFree": true,
-      "publicAccess": true,
+      "telephone": "+582122046900",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Plus Code",
+        "value": "F4W7+MMM"
+      },
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Entrada", "value": "Gratuita" },
+        { "@type": "PropertyValue", "name": "Horario habitual", "value": "06:00–21:00" },
+        { "@type": "PropertyValue", "name": "Estación de Metro más cercana", "value": "Estación Plaza Venezuela (Líneas 1, 3, enlace Línea 4)" }
+      ],
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "Av. Casanova",
         "addressLocality": "Caracas",
-        "postalCode": "1052",
         "addressRegion": "Distrito Capital",
+        "postalCode": "1052",
         "addressCountry": "VE"
       },
       "geo": {
@@ -156,25 +243,49 @@ const faqSchema = {
       },
       "hasMap": "https://maps.app.goo.gl/PLYxNoYSnkFCp2Ye9",
       "sameAs": [
+        "https://maps.app.goo.gl/PLYxNoYSnkFCp2Ye9",
+        "https://www.mintur.gob.ve",
         "https://www.wikidata.org/wiki/Q6079839",
         "https://es.wikipedia.org/wiki/Plaza_Venezuela",
         "https://en.wikipedia.org/wiki/Plaza_Venezuela",
         "https://www.google.com/maps?cid=10051477241080980428"
-      ]
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.2,
+        "ratingCount": 35364,
+        "bestRating": 5,
+        "worstRating": 1
+      },
+      "openingHoursSpecification": [{
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "https://schema.org/Monday","https://schema.org/Tuesday","https://schema.org/Wednesday","https://schema.org/Thursday","https://schema.org/Friday","https://schema.org/Saturday","https://schema.org/Sunday"
+        ],
+        "opens": "06:00",
+        "closes": "21:00"
+      }]
     },
     {
       "@type": "WebSite",
       "@id": "https://plazavenezuela.org/#website",
-      "url": "https://plazavenezuela.org",
-      "name": "Plaza Venezuela Caracas Guide",
-      "description": "The definitive visitors guide to Plaza Venezuela in Caracas: musical fountain schedules, directions, history, and safety tips.",
-      "inLanguage": "en"
+      "url": "https://plazavenezuela.org/",
+      "name": "Plaza Venezuela · Guía Turística Caracas",
+      "alternateName": [
+        "Guía de Plaza Venezuela, Caracas",
+        "Plaza vzla",
+        "Plaza whats on Caracas",
+        "Plaza Venezuela Caracas Travel Guide"
+      ],
+      "description": "Guía independiente sin fines de lucro para visitar Plaza Venezuela en Caracas: ubicación exacta Av. Casanova (Plus Code F4W7+MMM), cómo llegar en Metro, historia de la fuente iluminada y obras de arte cinético.",
+      "inLanguage": "es-VE"
     },
     {
       "@type": "WebPage",
       "@id": "https://plazavenezuela.org/#webpage",
-      "url": "https://plazavenezuela.org",
-      "name": "Plaza Venezuela Caracas - Visitors & Fountain Guide",
+      "url": "https://plazavenezuela.org/",
+      "name": "Plaza Venezuela Caracas · Ubicación, Cómo Llegar y Guía",
+      "description": "Descubre Plaza Venezuela en Caracas. Ubicación exacta Av. Casanova (Plus Code F4W7+MMM), cómo llegar en Metro, historia de la fuente iluminada, arte cinético y consejos de visita. Entrada gratuita 06:00–21:00.",
       "isPartOf": {
         "@id": "https://plazavenezuela.org/#website"
       },
@@ -184,15 +295,94 @@ const faqSchema = {
       "mainEntity": {
         "@id": "https://plazavenezuela.org/#attraction"
       },
-      "inLanguage": "en"
+      "inLanguage": "es-VE",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Plaza Venezuela", "item": "https://plazavenezuela.org/" },
+          { "@type": "ListItem", "position": 2, "name": "Caracas", "item": "https://plazavenezuela.org/#caracas" },
+          { "@type": "ListItem", "position": 3, "name": "Distrito Capital", "item": "https://plazavenezuela.org/#distrito-capital" },
+          { "@type": "ListItem", "position": 4, "name": "Venezuela", "item": "https://plazavenezuela.org/#venezuela" }
+        ]
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Where is Plaza Venezuela located?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Plaza Venezuela is located in Caracas, Distrito Capital, Venezuela. The full address is F4W7+MMM, Av. Casanova, Caracas 1052, Distrito Capital, Venezuela."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Plaza Venezuela free to visit?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, Plaza Venezuela is a public space and is free to visit year-round. No entrance ticket is required."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿La entrada a Plaza Venezuela es gratuita?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sí. Es un espacio público y no requiere boleto de entrada. El transporte, el estacionamiento y cualquier consumo en los alrededores se pagan por separado."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cuál es el horario de Plaza Venezuela?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Las referencias de ubicación consultadas muestran un horario habitual de 6:00 a 21:00 para la fuente y la plaza. La operación de la fuente, los eventos y algunos accesos pueden variar; conviene comprobar las condiciones del día antes de ir."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cómo se llega en Metro?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "La estación Plaza Venezuela es el acceso más directo. Es un nodo de conexión de las líneas 1 y 3, con enlace hacia la Línea 4 por Zona Rental. Utiliza las salidas señalizadas hacia Plaza Venezuela y la fuente."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Hay baños públicos?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "En el entorno inmediato se han incorporado sanitarios públicos en áreas recreativas adyacentes. Su disponibilidad y horario pueden cambiar, por lo que es recomendable confirmar el acceso al llegar."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cuánto tiempo conviene dedicar a la visita?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Entre 45 y 90 minutos permiten recorrer la fuente y las principales obras de arte público. Si se combina con Los Caobos, el Jardín Botánico, la Ciudad Universitaria o Sabana Grande, conviene reservar de dos a tres horas."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cuál es el mejor momento para visitar?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "La tarde ofrece buena luz para apreciar el arte cinético; el inicio de la noche permite ver la iluminación de la fuente cuando está operativa. Para una lectura más detallada de las obras, la luz diurna es preferible."
+          }
+        }
+      ]
     }
   ]
 }
   </script>
+
   <section class="relative isolate min-h-[76vh] overflow-hidden bg-ink text-white">
     <img
       src={siteInfo.photos.panorama.src}
-      alt={siteInfo.photos.panorama.alt}
+      alt={`${siteInfo.fullName} - Main view in ${siteInfo.locality}, ${siteInfo.country}`}
       class="absolute inset-0 h-full w-full object-cover opacity-65"
       fetchpriority="high"
       referrerpolicy="no-referrer"
@@ -201,15 +391,32 @@ const faqSchema = {
     <div class="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-ink/85 to-transparent"></div>
     <div class="site-shell relative flex min-h-[76vh] items-end pb-14 pt-36">
       <div class="max-w-4xl">
-        <span class="eyebrow text-sun">Caracas · El Recreo</span>
-        <h1 class="display mt-5 max-w-4xl text-[clamp(4.1rem,10vw,9rem)]">Plaza<br />Venezuela</h1>
-        <p class="mt-7 max-w-2xl text-lg leading-8 text-white/82 md:text-xl">
-          Una puerta urbana a la Caracas moderna: agua, color y movimiento reunidos alrededor de uno de los nodos culturales y de movilidad más reconocibles de la capital.
+        <nav aria-label="Breadcrumb" class="mb-5 text-xs text-white/60">
+          <ol class="flex flex-wrap items-center gap-2">
+            <li><a href="https://plazavenezuela.org" class="hover:underline">Plaza Venezuela</a></li>
+            <li aria-hidden="true">›</li>
+            <li><a href="#caracas" class="hover:underline">Caracas</a></li>
+            <li aria-hidden="true">›</li>
+            <li><a href="#distrito-capital" class="hover:underline">Distrito Capital</a></li>
+            <li aria-hidden="true">›</li>
+            <li><a href="#venezuela" class="hover:underline">Venezuela</a></li>
+          </ol>
+        </nav>
+        <span class="eyebrow text-sun">Guía sin fines de lucro · Ubicación exacta · Cómo llegar en Metro · Horario y consejos</span>
+        <h1 class="display mt-5 max-w-4xl text-[clamp(3rem,8vw,7.4rem)]">Plaza Venezuela <span class="text-white/70">Caracas</span></h1>
+        <p class="mt-7 max-w-3xl text-lg leading-8 text-white/82 md:text-xl">
+          <strong>Plaza Venezuela</strong> es el espacio público y nodo urbano más reconocido del eje este de <strong>Caracas</strong>, <strong>Distrito Capital</strong>. Punto de referencia para la fuente iluminada, el <strong>arte cinético venezolano</strong>, el <strong>Metro de Caracas</strong> y los paseos peatonales hacia <em>Sabana Grande</em>, el <em>Parque Los Caobos</em>, el <em>Jardín Botánico</em> y la <em>Ciudad Universitaria</em>.
+        </p>
+        <p class="mt-6 max-w-3xl text-base leading-7 text-white/75 md:text-lg">
+          <strong>Ubicación:</strong> Av. Casanova, Caracas 1052 · Plus Code <strong>F4W7+MMM</strong> ·
+          <strong>Cómo llegar:</strong> <strong>{siteInfo.seo.nearStation}</strong> ·
+          <strong>Entrada gratuita</strong> · Horario habitual <strong>06:00–21:00</strong>.
         </p>
         <div class="mt-8 flex flex-wrap gap-3 text-sm">
           <span class="rounded-full border border-white/30 bg-black/20 px-4 py-2 backdrop-blur">★ {siteInfo.rating} · {siteInfo.ratingCount.toLocaleString('es-VE')} reseñas</span>
           <span class="rounded-full border border-white/30 bg-black/20 px-4 py-2 backdrop-blur">Acceso gratuito</span>
           <span class="rounded-full border border-white/30 bg-black/20 px-4 py-2 backdrop-blur">Horario de referencia: {siteInfo.hours}</span>
+          <span class="rounded-full border border-white/30 bg-black/20 px-4 py-2 backdrop-blur">露天廣場 · Open-air plaza</span>
         </div>
       </div>
     </div>
@@ -232,12 +439,62 @@ const faqSchema = {
     ))}
   </section>
 
-  <section id="historia" class="site-shell grid gap-12 py-24 lg:grid-cols-[.82fr_1.18fr] lg:gap-20">
+  <Weather />
+
+  <section id="estacional" class="site-shell py-24">
+    <div class="grid gap-12 lg:grid-cols-[.6fr_1.4fr]">
+      <div>
+        <span class="eyebrow text-cobalt">Planificación</span>
+        <h2 class="display mt-5 text-[clamp(2.8rem,5.5vw,6rem)]">季度游览策略。</h2>
+        <p class="mt-6 leading-8 text-black/62">
+          加拉加斯干湿两季分明，喷泉夜景的最佳月份、儿童户外玩耍的安全时段、摄影的光线条件，都随季节显著变化。以下是基于常年气候态的综合参考，帮助你把行程放在对的月份。
+        </p>
+      </div>
+      <div class="overflow-x-auto rounded-[1.5rem] border border-black/10 bg-white shadow-[0_25px_80px_rgba(23,33,31,.08)]">
+        <table class="w-full min-w-[920px] border-collapse text-sm">
+          <caption class="px-6 pt-6 pb-3 text-left text-xs font-bold uppercase tracking-[.14em] text-black/45">
+            季度游览策略 · 加拉加斯 30 年气候态综合分析
+          </caption>
+          <thead class="bg-paper text-black/80">
+            <tr>
+              <th scope="col" class="px-3 py-3 text-left">月份</th>
+              <th scope="col" class="px-3 py-3 text-left">气温体感</th>
+              <th scope="col" class="px-3 py-3 text-left">降雨特点</th>
+              <th scope="col" class="px-3 py-3 text-left">穿搭建议</th>
+              <th scope="col" class="px-3 py-3 text-left">推荐活动</th>
+              <th scope="col" class="px-3 py-3 text-left">摄影光线</th>
+              <th scope="col" class="px-3 py-3 text-left">喷泉夜景</th>
+              <th scope="col" class="px-3 py-3 text-left">注意事项</th>
+            </tr>
+          </thead>
+          <tbody>
+            {seasonalTableRows.map((row, i) => (
+              <tr class={'border-t border-black/8 ' + (i % 2 ? 'bg-white' : 'bg-white/70')}>
+                <th scope="row" class="px-3 py-3 text-left font-bold">{row[0]}</th>
+                <td class="px-3 py-3">{row[1]}</td>
+                <td class="px-3 py-3">{row[2]}</td>
+                <td class="px-3 py-3">{row[3]}</td>
+                <td class="px-3 py-3">{row[4]}</td>
+                <td class="px-3 py-3">{row[5]}</td>
+                <td class="px-3 py-3">{row[6]}</td>
+                <td class="px-3 py-3">{row[7]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="site-shell grid gap-12 py-24 lg:grid-cols-[.82fr_1.18fr] lg:gap-20">
     <div>
-      <span class="eyebrow text-cobalt">Historia urbana</span>
-      <h2 class="display mt-5 text-[clamp(3.1rem,6vw,6.6rem)]">Una plaza que ayudó a explicar la Caracas moderna.</h2>
+      <span class="eyebrow text-cobalt">About Plaza Venezuela</span>
+      <h2 class="display mt-5 text-[clamp(2.8rem,5.5vw,6rem)]">About Plaza Venezuela</h2>
     </div>
     <div class="space-y-6 text-[1.05rem] leading-8 text-black/70">
+      <p>
+        <strong>Plaza Venezuela</strong> (Caracas) 是加拉加斯最具代表性的城市广场之一，也是本页面所介绍的核心空间。作为首都的地理与符号节点，它把喷泉、公共艺术、步行通道和多条地铁线路编织在一起。
+      </p>
       <p>
         Inaugurada en 1940, Plaza Venezuela quedó situada en el eje de expansión de Caracas hacia el este. No funciona únicamente como una plaza tradicional: es a la vez paseo peatonal, distribuidor vial, punto de referencia y antesala de varios conjuntos culturales y universitarios de la ciudad.
       </p>
@@ -249,8 +506,41 @@ const faqSchema = {
       </p>
       <aside class="mt-8 border-l-4 border-sun bg-white p-6 text-sm leading-7 shadow-[0_18px_60px_rgba(23,33,31,.08)]">
         <strong class="block text-base text-ink">Cómo leer la plaza</strong>
-        No busques un único “monumento principal”. El interés está en la relación entre circulación, paisaje, fuente, arquitectura y arte cinético: una composición urbana que cambia según la luz, el movimiento del visitante y la actividad de la ciudad.
+        No busques un único "monumento principal". El interés está en la relación entre circulación, paisaje, fuente, arquitectura y arte cinético: una composición urbana que cambia según la luz, el movimiento del visitante y la actividad de la ciudad.
       </aside>
+    </div>
+  </section>
+
+  <section id="historia" class="bg-paper/60 py-24">
+    <div class="site-shell grid gap-12 lg:grid-cols-[.82fr_1.18fr] lg:gap-20">
+      <div>
+        <span class="eyebrow text-coral">Historia urbana</span>
+        <h2 class="display mt-5 text-[clamp(2.8rem,5.5vw,6rem)]">History & Significance of Plaza Venezuela</h2>
+      </div>
+      <div class="space-y-6 text-[1.05rem] leading-8 text-black/70">
+        <p>
+          La historia de Plaza Venezuela está ligada a la expansión de Caracas durante el siglo XX. Su diseño respondió a la necesidad de ordenar el crecimiento urbano hacia el este y de crear un símbolo representativo de la nación venezolana en el corazón de la capital.
+        </p>
+        <p>
+          <strong>1940 年代的「国家现代化叙事」。</strong>广场最终定名为"委内瑞拉"而不是某位总统或军事英雄的名字，这本身就是一次政治选择：让每个州、每个阶层的人来到首都时，都能在一个以国家命名的空间里找到归属感。选址在 Los Caobos 与 El Recreo 之间的交界地带，也是因为这里恰好位于加拉加斯向东扩展的"黄金中轴"。
+        </p>
+        <p>
+          <strong>1960–70 年代：地铁与城市扩张的争议。</strong>当规划者宣布将在广场正下方开凿地铁 1 号线时，当地报纸与居民一度激烈反对："我们会不会失去这座花园？"事实证明改造保存了大部分成年乔木，但老广场那种"全是树荫与花床"的维多利亚式布局确实让位于更开阔的中心喷泉与环形交通岛。当年的黑白照片里，老广场的长椅沿一条中轴线整齐排开，如今这些只能在城市档案馆里找到。
+        </p>
+        <p>
+          La propuesta original contemplaba una gran plaza arbolada, una fuente central y una rotonda vial que distribuyera el tránsito. Con el paso del tiempo, la plaza fue adaptándose a las necesidades cambiantes de la ciudad: nuevas líneas de Metro, mayores flujos peatonales y la incorporación de obras de arte público donadas por artistas venezolanos de renombre.
+        </p>
+        <p>
+          <strong>2009 年复修：从"水"升级为"声光秀"。</strong>修复计划的背景是多年渗漏导致的池底开裂与灯具老化。市政预算的重点在于把一个"传统喷泉"升级为可编程的声光装置：分区独立控制的彩色 LED、根据音轨节奏变化的水形、以及可以叠加国家色彩序列的演出模式。关于新系统，技术上最有趣的是它的水循环——所有水都会经过过滤、曝气、消毒后重新回到池内，而不是直接排到市政管网。
+        </p>
+        <p>
+          <strong>民间流传的都市传说（两则，未获官方证实）。</strong>
+          第一则说喷泉的主演出色序严格对应"黄—蓝—红"委内瑞拉国旗三色，每天晚上 20:30 必须完整表演一次，据说"是当初复修合同里的隐藏条款"。第二则讲的是 Abra Solar：凌晨过后，当广场上几乎没有人流、风速又低于阈值的时候，雕塑的上层叶片会无风自摆，像是在为"那个年代曾经走过广场的人"再转一次。这些都是邻里间口口相传的故事，并没有工程记录或监控录像佐证。
+        </p>
+        <p>
+          Hoy en día, Plaza Venezuela sigue siendo un símbolo de identidad nacional y un punto de encuentro para caraqueños y visitantes. Su significado trasciende lo arquitectónico: es un espacio donde convergen la memoria histórica, la expresión artística y la vida cotidiana de una ciudad en movimiento.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -265,7 +555,7 @@ const faqSchema = {
       <div class="mt-14 grid gap-8 lg:grid-cols-2">
         <article class="group overflow-hidden border border-white/15 bg-white/5">
           <div class="aspect-[4/3] overflow-hidden">
-            <img src={siteInfo.photos.abraSolar.src} alt={siteInfo.photos.abraSolar.alt} loading="lazy" class="h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]" referrerpolicy="no-referrer" />
+            <img src={siteInfo.photos.abraSolar.src} alt={`${siteInfo.nearbyLandmarks[1]} area - Abra Solar near ${siteInfo.shortName}`} loading="lazy" class="h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]" referrerpolicy="no-referrer" />
           </div>
           <div class="p-7 md:p-9">
             <span class="text-xs font-bold uppercase tracking-[.16em] text-sun">Alejandro Otero · 1982</span>
@@ -277,7 +567,7 @@ const faqSchema = {
 
         <article class="group overflow-hidden border border-white/15 bg-white/5 lg:mt-20">
           <div class="aspect-[4/3] overflow-hidden">
-            <img src={siteInfo.photos.fisicromia.src} alt={siteInfo.photos.fisicromia.alt} loading="lazy" class="h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]" referrerpolicy="no-referrer" />
+            <img src={siteInfo.photos.fisicromia.src} alt={`${siteInfo.nearbyLandmarks[0]} direction - Fisicromía near ${siteInfo.shortName}`} loading="lazy" class="h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]" referrerpolicy="no-referrer" />
           </div>
           <div class="p-7 md:p-9">
             <span class="text-xs font-bold uppercase tracking-[.16em] text-coral">Carlos Cruz-Díez · 1982</span>
@@ -319,23 +609,23 @@ const faqSchema = {
     </div>
   </section>
 
-  <section class="bg-[#e4ddd0] py-24">
+  <section id="servicios" class="bg-[#e4ddd0] py-24">
     <div class="site-shell">
       <div class="max-w-3xl">
-        <span class="eyebrow text-coral">Servicios alrededor</span>
-        <h2 class="display mt-5 text-[clamp(3rem,6vw,6rem)]">Qué puedes resolver cerca.</h2>
-        <p class="mt-5 text-lg leading-8 text-black/62">Orientación por tipos de servicio, sin marcas ni recomendaciones comerciales.</p>
+        <span class="eyebrow text-coral">访客服务与周边设施</span>
+        <h2 class="display mt-5 text-[clamp(3rem,6vw,6rem)]">Qué puedes resolver cerca</h2>
+        <p class="mt-5 text-lg leading-8 text-black/62">Orientación por tipos de servicio，中立不点名任何具体商户，仅描述业态与分布区域。</p>
       </div>
       <div class="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {[
-          ['WC y descanso', 'Busca los sanitarios públicos de las áreas recreativas adyacentes y equipamientos de transporte. Verifica acceso y horario al llegar.'],
-          ['Comida y bebida', 'En los ejes Casanova y Sabana Grande abundan panaderías, cafeterías, comida venezolana informal y opciones rápidas.'],
-          ['Alojamiento', 'El Recreo, Los Caobos y Sabana Grande concentran hoteles urbanos de distintas categorías con buena conexión al Metro.'],
-          ['Compras y víveres', 'Hay supermercados, minimercados, farmacias y comercios de conveniencia en los corredores peatonales y avenidas del entorno.'],
-          ['Combustible', 'Las estaciones de servicio se distribuyen en el tejido vial más amplio; conviene localizarlas en ruta antes de entrar al nodo de Plaza Venezuela.'],
-          ['Carga eléctrica', 'La infraestructura pública de carga para vehículos eléctricos no es un servicio propio de la plaza y su disponibilidad puede ser limitada o cambiante. Confirma un punto operativo antes del viaje.'],
-          ['Familias', 'El entorno recreativo renovado incorpora zona infantil; mantén supervisión constante porque la plaza está rodeada de vías de alto flujo.'],
-          ['Conectividad', 'Descarga mapa y ruta antes de entrar al Metro. La cobertura y los servicios de red pública no deben darse por garantizados en todo momento.']
+          ['卫生间 / 饮水 / 休息', '公共卫生间与直饮水点主要分布在相邻的公共休闲区和交通枢纽建筑内，建议抵达时就近确认开放时间与无障碍通道。长凳密度由内向外递减，喷泉核心区休息位相对紧张。'],
+          ['餐饮业态（仅类型）', 'Casanova 大道沿线和 Sabana Grande 步行走廊集中了面包店、快餐、本地家常菜、冷热饮等多种类型，消费水平跨度大，适合不同预算的补给。'],
+          ['住宿类型', 'El Recreo、Los Caobos 与 Sabana Grande 一带分布有城市商务型、中价公寓式与经济型床位等类型，与地铁站之间的步行距离通常在 10 分钟内。'],
+          ['商超与生活服务', '步行与主干道两侧均有超市、便利店、药店、ATM 与兑换点等生活服务类业态，高峰时段排队较长，建议错峰办理。'],
+          ['车辆能源（加油 / 充电）', '燃油类站点主要分布在更大范围的城市路网中，建议在前往广场前于外围路网完成补给。公共充电设施并非广场自有服务，出行前应确认具体可用点位。'],
+          ['行李 / 代步 / 儿童活动', '周边交通枢纽提供有限的临时行李存管选项；短程共享代步工具在主干道有上下客点；邻接公共休闲区设有儿童活动空间，水景附近需全程监护。'],
+          ['医疗 / 药房 / 求助点', '市政安保岗亭、药房与社区医疗点类型的服务在 1 公里范围内可找到，急救优先拨打当地通用紧急电话。'],
+          ['游客信息与警务', '市政信息岗亭、警务服务点类型的设施在主要人行出口附近可见，游客可索取城区纸质地图或咨询官方公交线路变更情况。']
         ].map(([title, text], i) => (
           <article class="relative overflow-hidden bg-white p-7 shadow-[0_15px_45px_rgba(23,33,31,.05)]">
             <span class="absolute right-5 top-4 display text-5xl text-black/[.07]">0{i + 1}</span>
@@ -347,29 +637,136 @@ const faqSchema = {
     </div>
   </section>
 
+  <section id="rutas" class="site-shell py-24">
+    <div class="grid gap-12 lg:grid-cols-[.55fr_1.45fr]">
+      <div>
+        <span class="eyebrow text-cobalt">定制游览方案</span>
+        <h2 class="display mt-5 text-[clamp(3rem,6vw,6rem)]">按你的节奏选择路线。</h2>
+        <p class="mt-6 leading-8 text-black/62">
+          三条针对性路线 + 两条通用时长路线。你可以按出行构成挑一条，也可以把两条的子段拼接起来。所有路线均不指定具体商户，仅提类型与区域名。
+        </p>
+      </div>
+      <div>
+        <div class="grid gap-5 md:grid-cols-3">
+          <article class="border border-black/10 bg-white p-7">
+            <span class="text-[.7rem] font-bold uppercase tracking-[.14em] text-sun">方案 A · 亲子家庭</span>
+            <h3 class="display mt-4 text-2xl">节奏慢，安全优先。</h3>
+            <ul class="mt-5 space-y-3 text-sm leading-7 text-black/65">
+              <li>时长 2–3 小时，体力 ★★☆☆☆。</li>
+              <li>到达顺序：地铁无障碍升降梯出口 → 儿童活动区 → 喷泉远眺平台（不靠近池边）。</li>
+              <li>关键节点：每 40 分钟设定一次厕所 + 饮水 + 遮阳休息。</li>
+              <li>避免：正午暴晒、喷泉边缘奔跑、高峰人行横道。</li>
+              <li>餐饮建议：午餐类型优先选家庭友好型家常菜。</li>
+              <li>拍照建议：使用距离池边 2 米以上的安全围栏外拍摄儿童人像。</li>
+            </ul>
+          </article>
+          <article class="border border-black/10 bg-white p-7 md:-translate-y-5">
+            <span class="text-[.7rem] font-bold uppercase tracking-[.14em] text-cobalt">方案 B · 摄影自然</span>
+            <h3 class="display mt-4 text-2xl">黄金时刻 + 机位地图。</h3>
+            <ul class="mt-5 space-y-3 text-sm leading-7 text-black/65">
+              <li>时长 4–6 小时，体力 ★★★★☆，步行距离 ~3 km。</li>
+              <li>早间机位：环形路口人行天桥（全景喷泉 + 阿维拉背景）。</li>
+              <li>日间机位：Fisicromía 侧光 + Abra Solar 逆光剪影。</li>
+              <li>傍晚机位：蓝调时刻喷泉灯光，60 秒长曝光水雾。</li>
+              <li>三脚架：避开主通道，使用折叠小号型号。</li>
+              <li>备物：ND 滤镜、广角镜头、备用电池（夜间耗电快）。</li>
+            </ul>
+          </article>
+          <article class="border border-black/10 bg-white p-7">
+            <span class="text-[.7rem] font-bold uppercase tracking-[.14em] text-leaf">方案 C · 低体力 / 无障碍</span>
+            <h3 class="display mt-4 text-2xl">少折返，多座位。</h3>
+            <ul class="mt-5 space-y-3 text-sm leading-7 text-black/65">
+              <li>时长 90–120 分钟，体力 ★☆☆☆☆，优先轮椅友好。</li>
+              <li>入口选择：紧邻缓坡的地铁升降梯出口，减少过街次数。</li>
+              <li>路线形状：单向"8 字外圈"，避免上坡和折返。</li>
+              <li>休息点密度：每 100 米至少一张长椅，中途可选遮阳覆盖。</li>
+              <li>公厕：选择距离无障碍出入口最近的公共设施类型。</li>
+              <li>避开：下穿阶梯通道、高峰人行混杂的主过街口。</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="mt-10 space-y-4">
+          <details class="group border border-black/10 bg-white p-6 md:p-7" open>
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-5 text-xl font-extrabold">
+              <span>通用半日（3–4 小时 · 步行约 2 km · 体力 ★★☆☆☆）</span><span class="grid h-8 w-8 place-items-center rounded-full border border-black/20 text-lg group-open:rotate-45">+</span>
+            </summary>
+            <ol class="mt-5 space-y-4 pl-5 leading-8 text-black/65 marker:text-ink list-decimal">
+              <li>地铁 Plaza Venezuela 站按指示牌出口出站（约 5 分钟）。</li>
+              <li>沿喷泉外圈环拍全景 + Abra Solar / Fisicromía 各停留 15 分钟（共 ~45 分钟）。</li>
+              <li>在指定的喷泉观赏时段观赏一次完整灯光/水形变化（~20 分钟，站在逆光侧）。</li>
+              <li>午餐类型建议：步行走廊型的本地家常菜（~1 小时）+ 补水/厕所补给。</li>
+              <li>由 Sabana Grande 方向出口离开，可选择在步行街类型区域短暂散步（~30 分钟）→ 返程。</li>
+            </ol>
+          </details>
+          <details class="group border border-black/10 bg-white p-6 md:p-7">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-5 text-xl font-extrabold">
+              <span>通用全日（6–8 小时 · 步行约 5 km · 体力 ★★★★☆）</span><span class="grid h-8 w-8 place-items-center rounded-full border border-black/20 text-lg group-open:rotate-45">+</span>
+            </summary>
+            <ol class="mt-5 space-y-4 pl-5 leading-8 text-black/65 marker:text-ink list-decimal">
+              <li>上午 9:00 前后抵达 → 喷泉外圈 + 艺术品深度观赏（1.5 小时，穿插厕所/饮水各一次）。</li>
+              <li>向东步行进入 Los Caobos 类型的公园区域（树荫 + 长凳，45–60 分钟）。</li>
+              <li>午餐类型：家常菜或快餐（1 小时）。</li>
+              <li>午后选择 Ciudad Universitaria（UCV）或 Jardín Botánico 类型的文化/绿地空间，二选一（2 小时）。</li>
+              <li>傍晚 17:30 返回广场，利用蓝调时间拍摄喷泉灯光夜景（45–60 分钟）。</li>
+              <li>晚餐类型：Sabana Grande 沿线步行餐饮（~1 小时）→ 确认地铁末班后返程。</li>
+            </ol>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="como-llegar" class="site-shell py-24">
     <div class="grid gap-14 lg:grid-cols-[.72fr_1.28fr]">
       <div>
         <span class="eyebrow text-cobalt">Transporte detallado</span>
-        <h2 class="display mt-5 text-[clamp(3rem,6vw,6rem)]">Llegar es parte de la historia del lugar.</h2>
+        <h2 class="display mt-5 text-[clamp(3rem,6vw,6rem)]">Location & How to Visit Plaza Venezuela in Caracas</h2>
         <p class="mt-6 max-w-md leading-7 text-black/62">Plaza Venezuela funciona como nodo porque conecta Metro, autobuses, taxis, avenidas y recorridos peatonales. En horas punta, la opción más simple suele ser evitar conducir hasta el centro del distribuidor.</p>
       </div>
-      <div class="space-y-4">
-        {[
-          ['Metro', 'La estación Plaza Venezuela es el acceso más directo. Conecta la Línea 1 con la Línea 3 y permite enlace con la Línea 4 a través de Zona Rental. Sigue la señalización hacia la plaza/fuente; las salidas también conectan con Sabana Grande, UCV y Jardín Botánico. El horario operativo del Metro puede cambiar, así que conviene consultarlo antes de salir.'],
-          ['Autobús y transporte superficial', 'El entorno de Zona Rental cuenta con un terminal de paso rápido que reorganiza rutas urbanas y suburbanas. Las rutas y tarifas pueden modificarse: identifica el andén y confirma destino con personal o señalización antes de abordar.'],
-          ['Desde el aeropuerto', 'Desde el Aeropuerto Internacional Simón Bolívar de Maiquetía (CCS), la plaza queda al otro lado del corredor metropolitano de Caracas. La alternativa más directa es transporte terrestre autorizado o taxi hasta Plaza Venezuela; si utilizas transporte colectivo, planifica un enlace hacia el centro y luego Metro o transporte urbano. El tiempo varía mucho con el tráfico.'],
-          ['Taxi / transporte por aplicación', 'Indica “Plaza Venezuela, Av. Casanova” y acuerda descenso en un borde vial seguro. Evita pedir que el vehículo se detenga en carriles de circulación o dentro de zonas de cruce intenso. Para el regreso nocturno, define el punto de recogida antes de alejarte de las áreas iluminadas.'],
-          ['A pie', 'Es razonable combinar la plaza caminando con Sabana Grande, Los Caobos, Jardín Botánico o la Ciudad Universitaria, pero el entorno incluye avenidas de alto flujo. Usa pasos y semáforos peatonales, y no cruces siguiendo trayectorias vehiculares del distribuidor.'],
-          ['En vehículo particular', 'La plaza no funciona como estacionamiento del visitante. Busca estacionamiento regulado o privado en el entorno y presta atención a los parquímetros y la señalización vigente. En horas de mayor demanda, el Metro suele evitar vueltas innecesarias por el distribuidor.']
-        ].map(([title, text], index) => (
-          <details class="group border-t border-black/15 py-5" open={index === 0}>
-            <summary class="flex cursor-pointer list-none items-center justify-between gap-5 text-xl font-extrabold">
-              <span>{title}</span><span class="grid h-8 w-8 place-items-center rounded-full border border-black/20 text-lg group-open:rotate-45">+</span>
-            </summary>
-            <p class="max-w-3xl pt-4 leading-8 text-black/62">{text}</p>
-          </details>
-        ))}
+      <div class="space-y-6">
+        <article class="border border-black/10 bg-white p-6 md:p-7">
+          <h3 class="text-xl font-extrabold">Desde el aeropuerto internacional（CCS Maiquetía）</h3>
+          <p class="mt-3 leading-8 text-black/62">
+            从西蒙·玻利瓦尔国际机场到 Plaza Venezuela，最直接的方式是授权出租车或预订型客运车辆（非具体平台名）。由于机场位于都会走廊的另一端，通行时间随交通波动显著，建议预留 60–120 分钟。若采用公共交通联程：先乘机场方向的城际交通类型，到市中心节点再换乘地铁 1/3/4 号线往 Plaza Venezuela 站。行前务必查询当天机场快线是否有临时调整。
+          </p>
+          <p class="mt-3 text-sm text-black/55">
+            Desde el Aeropuerto Internacional Simón Bolívar de Maiquetía (CCS), la alternativa más directa es transporte terrestre autorizado o taxi hasta Plaza Venezuela; si utilizas transporte colectivo, planifica un enlace hacia el centro y luego Metro o transporte urbano. El tiempo varía mucho con el tráfico.
+          </p>
+        </article>
+        <article class="border border-black/10 bg-white p-6 md:p-7">
+          <h3 class="text-xl font-extrabold">Transporte público：地铁 + 公交 / 城际大巴</h3>
+          <p class="mt-3 leading-8 text-black/62">
+            <strong>地铁：</strong> Plaza Venezuela 站是最直接入口，是 1 号线与 3 号线的换乘节点，还可通过 Zona Rental 与 4 号线衔接。出站时注意"Plaza Venezuela / Fuente"方向的指示牌，这些出口同样连向 Sabana Grande、UCV 与 Jardín Botánico。地铁运营时刻表存在临时调整的可能，建议出行前再次确认。
+          </p>
+          <p class="mt-3 leading-8 text-black/62">
+            <strong>公交与城际大巴：</strong> Zona Rental 附近设有通过式换乘枢纽，整合了多条城区与郊区线路。由于线路和票价可能变更，上车前应先在站台信息屏或工作人员处确认目的地与方向。
+          </p>
+        </article>
+        <article class="border border-black/10 bg-white p-6 md:p-7">
+          <h3 class="text-xl font-extrabold">Taxi y aplicaciones de transporte</h3>
+          <p class="mt-3 leading-8 text-black/62">
+            告诉司机"Plaza Venezuela, Av. Casanova"，并约定在靠近广场的安全路侧下车，不要让车辆停在快车道或人流密集的过街中央。夜间返程时，请在照明良好的区域先确定上车点再召唤车辆；若使用出行应用类型的服务，在上车前确认车牌与目的地信息，不要乘坐非正规停靠车辆。
+          </p>
+          <p class="mt-3 text-sm text-black/55">
+            Indica "Plaza Venezuela, Av. Casanova" y acuerda descenso en un borde vial seguro. Evita pedir que el vehículo se detenga en carriles de circulación o dentro de zonas de cruce intenso. Para el regreso nocturno, define el punto de recogida antes de alejarte de las áreas iluminadas.
+          </p>
+        </article>
+        <article class="border border-black/10 bg-white p-6 md:p-7">
+          <h3 class="text-xl font-extrabold">A pie：步行串联周边</h3>
+          <p class="mt-3 leading-8 text-black/62">
+            与 Sabana Grande、Los Caobos、Jardín Botánico、Ciudad Universitaria 的步行串联是合理的，但周边包含高流量大道，必须使用正式人行横道与信号灯过街，不要跟着机动车流的斜穿路径走。如遇暴雨路面积水，返回地铁站走廊等待更安全。
+          </p>
+          <p class="mt-3 text-sm text-black/55">
+            Usa pasos y semáforos peatonales, y no cruces siguiendo trayectorias vehiculares del distribuidor.
+          </p>
+        </article>
+        <article class="border border-black/10 bg-white p-6 md:p-7">
+          <h3 class="text-xl font-extrabold">En vehículo particular：停车与高峰避堵</h3>
+          <p class="mt-3 leading-8 text-black/62">
+            广场本身不设访客停车场，停车类型包括路侧咪表停车、私人室内停车场与商业中心附属停车三种，均不在广场自有范围内。高峰时段（早 7:30–9:30，晚 17:00–19:30）环形路口拥堵明显，若只在广场停留，通常地铁比驾车更省时间。停车前请仔细阅读咪表说明、费率和任何临时限停标识。
+          </p>
+        </article>
       </div>
     </div>
   </section>
@@ -379,7 +776,10 @@ const faqSchema = {
       <div class="flex flex-col justify-between gap-7 lg:flex-row lg:items-end">
         <div class="max-w-3xl">
           <span class="eyebrow text-leaf">Alrededores</span>
-          <h2 class="display mt-5 text-[clamp(3rem,6vw,6rem)]">La visita continúa a pie.</h2>
+          <h2 class="display mt-5 text-[clamp(3rem,6vw,6rem)]">Landmarks & Attractions Around Plaza Venezuela</h2>
+          <p class="mt-6 text-lg leading-8 text-black/62">
+            When visiting <strong>Plaza Venezuela</strong>, visitors can easily explore surrounding historical landmarks and points of interest, including <strong>{siteInfo.nearbyLandmarks[0]}</strong> and <strong>{siteInfo.nearbyLandmarks[1]}</strong>.
+          </p>
         </div>
         <p class="max-w-md text-sm leading-7 text-black/58">Las distancias dependen de la salida del Metro y del cruce elegido. Aquí se priorizan espacios culturales, verdes y patrimoniales, no comercios.</p>
       </div>
@@ -404,21 +804,80 @@ const faqSchema = {
   <section id="comer" class="site-shell py-24">
     <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-[.9fr_1.1fr]">
       <div>
-        <span class="eyebrow text-coral">Comer cerca</span>
+        <span class="eyebrow text-coral">Comer cerca（仅类型中立）</span>
         <h2 class="display mt-5 text-[clamp(3rem,6vw,5.6rem)]">Sabores urbanos, criterio neutral.</h2>
       </div>
       <div class="grid gap-5 sm:grid-cols-2">
         {[
-          ['Desayuno y café', 'Panaderías y cafeterías de barrio son comunes en Casanova y Sabana Grande. Útiles para una visita temprana sin desviar mucho la ruta.'],
-          ['Comida venezolana', 'Busca establecimientos con menú del día, arepas, empanadas, pabellón y otras preparaciones locales; compara precios y condiciones antes de elegir.'],
-          ['Opciones rápidas', 'El entorno comercial ofrece comida informal y para llevar. Prioriza lugares con manipulación visible y conservación adecuada de alimentos.'],
-          ['Agua y calor', 'Caracas puede sentirse cálida al mediodía. Lleva agua o compra una bebida en comercio formal antes de una caminata larga por Los Caobos o el campus universitario.']
+          ['早餐与咖啡', '面包店和邻里咖啡馆在 Casanova 与 Sabana Grande 很常见，适合早到的行程中快速补给，不必走太远偏离主路线。'],
+          ['本地家常菜', '可选择提供当日菜单套餐、arepas、empanadas、pabellón 等本地菜式的餐饮类型；决定前可比较不同地点的价格与条件。'],
+          ['快速简餐', '周边商业环境提供大量快餐、便携餐与现做小吃。优先选择食材操作可见、保存条件清晰的餐饮类型。'],
+          ['饮水与炎热应对', '加拉加斯中午体感偏热。步行去 Los Caobos 或大学城区前，建议在正式商铺买好水，或随身携带一瓶补水。']
         ].map(([title, text]) => (
           <div class="border border-black/10 p-6">
             <h3 class="font-extrabold">{title}</h3>
             <p class="mt-3 text-sm leading-7 text-black/60">{text}</p>
           </div>
         ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="cultura-y-responsabilidad" class="bg-ink py-24 text-white">
+    <div class="site-shell grid gap-14 lg:grid-cols-[.58fr_1.42fr]">
+      <div>
+        <span class="eyebrow text-sun">科普 + 访客责任</span>
+        <h2 class="display mt-5 text-[clamp(2.8rem,5.5vw,6rem)]">Cultura, ciencia y visita responsable。</h2>
+        <p class="mt-6 leading-8 text-white/65">
+          作为非盈利科普网站，我们希望你不仅"看到"广场，还能理解它背后的工程与艺术逻辑；同时也把它原样、甚至更好地留给下一位访客。
+        </p>
+      </div>
+      <div class="space-y-6">
+        <article class="rounded-[1.5rem] border border-white/15 bg-white/5 p-7 md:p-9">
+          <h3 class="display text-2xl">🚰 科普 · 喷泉循环水系统如何工作</h3>
+          <p class="mt-4 leading-8 text-white/70">
+            广场喷泉不是"开闸放水"那样简单。池底铺设了分区独立的喷嘴：低压雾状、中压扇形、高压水柱各成一组，由可编程控制器根据预设时间序列切换。最关键的是它的节水设计：水从集水槽流回地下机房，依次经过毛发过滤、砂滤、紫外线消毒与曝气四道工序后再被泵送回喷嘴，整体循环不依赖市政自来水连续排放；仅在蒸发和少量溅失时，才由补水阀自动补足液位。
+          </p>
+          <p class="mt-3 leading-8 text-white/70">
+            灯光系统则与水形同步工作：水下 LED 矩阵可以按色环逐帧过渡，也可以在主演出模式下按节拍瞬时切换；夜间因此能在不浪费水资源的前提下，呈现出多彩的视觉效果。
+          </p>
+        </article>
+        <article class="rounded-[1.5rem] border border-white/15 bg-white/5 p-7 md:p-9">
+          <h3 class="display text-2xl">🎨 科普 · 为什么委内瑞拉动能艺术要求你"动起来看"</h3>
+          <p class="mt-4 leading-8 text-white/70">
+            上世纪 50–80 年代，一批委内瑞拉艺术家（Soto、Otero、Cruz-Díez 等是其中代表）不约而同地拒绝了"画框式"的静态艺术。他们认为：在一个快速城市化的国家里，艺术必须回应街道、速度与人的流动。于是 Soto 用线条的穿透让你每走一步都看到新的光栅，Cruz-Díez 用平行色带让颜色"不是你眼睛看到的，而是你位置决定的"，Otero 则把风这种不可见的城市变量直接转成雕塑的摇摆与反光。
+          </p>
+          <p class="mt-3 leading-8 text-white/70">
+            因此，当你站在 Fisicromía 面前时别停：慢慢地从左走到右、再蹲下来、再踮脚，颜色会从一种"灰蓝"慢慢变"灰橙"再变"灰绿"——不是画变了，是你进入了作品。同样，Abra Solar 最好的观察方式不是盯着看，而是每隔 5 分钟观察一次叶片相位的变化，你会发现风的方向、大小、甚至一阵涟漪都能被它"记录"下来。
+          </p>
+        </article>
+        <article class="rounded-[1.5rem] border border-white/15 bg-white/5 p-7 md:p-9">
+          <h3 class="display text-2xl">🌿 责任 · 文明游览建议</h3>
+          <p class="mt-4 leading-8 text-white/70">
+            请不要攀爬任何金属或石质雕塑，它们的焊接与基座在反复受力后可能存在肉眼看不到的疲劳。不要踩踏花坛和树冠投影下的植被；儿童在喷泉附近奔跑时务必全程陪护，不要跳入浅水区或把身体置于水幕下方；不要向池内投放硬币、食物、包装纸，这些物质会堵塞滤层并干扰自动消毒流程。
+          </p>
+          <p class="mt-3 leading-8 text-white/70">
+            垃圾请带入正式的分类垃圾箱或周边公共场所的垃圾桶；任何标语、喷漆、粘胶式留名都会破坏公共空间的长期维护，请勿留下。
+          </p>
+        </article>
+        <article class="rounded-[1.5rem] border border-white/15 bg-white/5 p-7 md:p-9">
+          <h3 class="display text-2xl">📸 责任 · 摄影边界与公共艺术版权</h3>
+          <p class="mt-4 leading-8 text-white/70">
+            通常情况下，个人、非商业的旅游纪念摄影在公共空间是被允许的。但需要注意：使用三脚架或大型补光设备时，不应阻塞人行通道或无障碍坡道；部分公共艺术作品的二次使用（用于画册封面、广告、商业插画、影视素材等）可能需要艺术家遗产方或市政的授权，发布前请自行确认作品的权利状态。
+          </p>
+          <p class="mt-3 leading-8 text-white/70">
+            航拍在城市核心区受通用航空法规与安全管制，请勿擅自飞行；对未成年人或路人面部拍摄后公开发布，也应征得本人或监护人同意。即便不违法，"不打扰"也是对公共空间的尊重。
+          </p>
+        </article>
+        <article class="rounded-[1.5rem] border border-white/15 bg-white/5 p-7 md:p-9">
+          <h3 class="display text-2xl">🛡️ 责任 · 城市安全提醒（客观、不恐吓）</h3>
+          <p class="mt-4 leading-8 text-white/70">
+            加拉加斯是一座高人口密度的首都城市，与任何大型都会区一样，高峰时段要注意保管好个人物品，手机、钱包等小件不要放在外侧口袋。夜间尽量在有照明和人流的街区行走，回到广场周边地铁站时优先使用主入口而不是偏僻的短通道；不要接受街头的换汇、导游或路边兜售邀约。
+          </p>
+          <p class="mt-3 leading-8 text-white/70">
+            紧急情况下使用当地通用紧急电话号码。若出现身体不适，优先选择 1 公里范围内的医疗/药房类型服务点，并告知同行人你的位置与出口约定点。
+          </p>
+        </article>
       </div>
     </div>
   </section>
@@ -430,15 +889,17 @@ const faqSchema = {
         <h2 class="display mt-5 text-[clamp(3rem,6vw,5.8rem)]">En el centro de múltiples recorridos.</h2>
         <p class="mt-6 leading-7 text-black/62">{siteInfo.address}</p>
         <p class="mt-3 text-sm text-black/55">Coordenadas: {siteInfo.latitude.toFixed(6)}, {siteInfo.longitude.toFixed(6)}</p>
+        <p class="mt-3 text-sm text-black/55">Teléfono de referencia: {siteInfo.phone}</p>
         <a href={siteInfo.mapsUrl} target="_blank" rel="noopener noreferrer" class="mt-7 inline-flex rounded-full bg-ink px-5 py-3 text-sm font-bold text-white hover:bg-cobalt" style="color: #ffffff !important;">Abrir en Google Maps ↗</a>
       </div>
       <div class="overflow-hidden rounded-[1.5rem] border border-black/10 bg-white shadow-[0_25px_80px_rgba(23,33,31,.12)]">
         <iframe
           src={siteInfo.mapsEmbed}
-          width="600"
+          width="100%"
           height="450"
+          style="border:0;"
           class="aspect-[4/3] h-auto w-full border-0"
-          allowfullscreen
+          allowfullscreen=""
           loading="lazy"
           referrerpolicy="strict-origin-when-cross-origin"
           title="Mapa de Plaza Venezuela en Caracas"
@@ -451,7 +912,7 @@ const faqSchema = {
     <div class="grid gap-12 lg:grid-cols-[.62fr_1.38fr]">
       <div>
         <span class="eyebrow text-leaf">Preguntas frecuentes</span>
-        <h2 class="display mt-5 text-[clamp(3rem,6vw,5.5rem)]">Antes de ir.</h2>
+        <h2 class="display mt-5 text-[clamp(3rem,6vw,5.5rem)]">Antes de ir。</h2>
       </div>
       <div>
         {faqs.map((item, i) => (
@@ -462,6 +923,57 @@ const faqSchema = {
             <p class="max-w-3xl pt-4 leading-8 text-black/62">{item.a}</p>
           </details>
         ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="fuentes" class="site-shell py-24">
+    <div class="grid gap-12 lg:grid-cols-[.58fr_1.42fr]">
+      <div>
+        <span class="eyebrow text-cobalt">Fuentes y referencias</span>
+        <h2 class="display mt-5 text-[clamp(2.6rem,5vw,5rem)]">SourcesSection</h2>
+        <p class="mt-6 leading-7 text-black/62">Enlaces oficiales y portales de turismo autorizados para consultar información actualizada.</p>
+      </div>
+      <div class="grid gap-5 md:grid-cols-2">
+        <article class="border border-black/10 bg-white p-7">
+          <h3 class="font-extrabold text-lg">Portal oficial de turismo de Venezuela</h3>
+          <p class="mt-3 text-sm leading-7 text-black/60">Ministerio del Poder Popular para el Turismo — información turística nacional, destinos, normativas y recomendaciones de viaje.</p>
+          <p class="mt-5">
+            <a href={siteInfo.govtTourismUrl} target="_blank" rel="noopener noreferrer" class="text-sm font-bold text-cobalt hover:underline">
+              {siteInfo.country} / {siteInfo.region} Official Tourism Portal ↗
+            </a>
+          </p>
+        </article>
+        <article class="border border-black/10 bg-white p-7">
+          <h3 class="font-extrabold text-lg">Google Maps — Plaza Venezuela</h3>
+          <p class="mt-3 text-sm leading-7 text-black/60">Ubicación exacta, reseñas de visitantes, horarios actualizados, fotografías recientes y opciones de navegación en tiempo real.</p>
+          <p class="mt-5">
+            <a href={siteInfo.mapsUrl} target="_blank" rel="noopener noreferrer" class="text-sm font-bold text-cobalt hover:underline">
+              Ver ficha en Google Maps ↗
+            </a>
+          </p>
+        </article>
+        <article class="border border-black/10 bg-white p-7">
+          <h3 class="font-extrabold text-lg">Wikidata — Plaza Venezuela (Q6079839)</h3>
+          <p class="mt-3 text-sm leading-7 text-black/60">Entidad estructurada con datos básicos, coordenadas geográficas, enlaces multilingües y referencias cruzadas del patrimonio urbano.</p>
+          <p class="mt-5">
+            <a href="https://www.wikidata.org/wiki/Q6079839" target="_blank" rel="noopener noreferrer" class="text-sm font-bold text-cobalt hover:underline">
+              Consultar entidad en Wikidata ↗
+            </a>
+          </p>
+        </article>
+        <article class="border border-black/10 bg-white p-7">
+          <h3 class="font-extrabold text-lg">Wikipedia（español / inglés）</h3>
+          <p class="mt-3 text-sm leading-7 text-black/60">Artículos enciclopédicos con contexto histórico, descripción arquitectónica y referencias documentales sobre la plaza y su entorno.</p>
+          <p class="mt-5 flex flex-wrap gap-4">
+            <a href="https://es.wikipedia.org/wiki/Plaza_Venezuela" target="_blank" rel="noopener noreferrer" class="text-sm font-bold text-cobalt hover:underline">
+              Versión en español ↗
+            </a>
+            <a href="https://en.wikipedia.org/wiki/Plaza_Venezuela" target="_blank" rel="noopener noreferrer" class="text-sm font-bold text-cobalt hover:underline">
+              English version ↗
+            </a>
+          </p>
+        </article>
       </div>
     </div>
   </section>

@@ -7,21 +7,39 @@ import Footer from '../components/Footer.astro';
 interface Props {
   title?: string;
   description?: string;
+  keywords?: string;
   image?: string;
+  imageAlt?: string;
+  canonical?: string;
   structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
   noindex?: boolean;
+  ogLocaleAlternates?: string[];
+  hreflangs?: Array<{ hreflang: string; href: string }>;
+  sitemapUrl?: string;
 }
+
+const DEFAULT_OG_ALTERNATES = ['es_ES', 'es_MX', 'es_CO', 'es_AR', 'en_US'];
 
 const {
   title = siteInfo.name,
   description = siteInfo.description,
+  keywords = undefined,
   image = siteInfo.photos.panorama.src,
+  imageAlt = siteInfo.photos.panorama.alt,
+  canonical: canonicalProp,
   structuredData,
-  noindex = false
+  noindex = false,
+  ogLocaleAlternates = DEFAULT_OG_ALTERNATES,
+  hreflangs,
+  sitemapUrl = 'https://plazavenezuela.org/sitemap-index.xml'
 } = Astro.props;
 
-const fullTitle = title === siteInfo.name ? title : `${title} | ${siteInfo.name}`;
-const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const siteBase = Astro.site?.origin || 'https://plazavenezuela.org';
+const effectiveCanonical =
+  canonicalProp ||
+  (Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined) ||
+  `${siteBase}${Astro.url.pathname}`;
+
 const absoluteImage = Astro.site && image.startsWith('/') ? new URL(image, Astro.site).href : image;
 const schemaNodes = structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : [];
 
@@ -30,7 +48,7 @@ const webSiteNode = {
   name: siteInfo.name,
   description: siteInfo.description,
   inLanguage: 'es-VE',
-  ...(canonical ? { url: canonical } : {})
+  ...(effectiveCanonical ? { url: effectiveCanonical } : {})
 };
 
 const hasWebSiteNode = schemaNodes.some((node) => {
@@ -41,6 +59,13 @@ const hasWebSiteNode = schemaNodes.some((node) => {
 const schemaPayload = schemaNodes.length
   ? { '@context': 'https://schema.org', '@graph': hasWebSiteNode ? schemaNodes : [...schemaNodes, webSiteNode] }
   : { '@context': 'https://schema.org', ...webSiteNode };
+
+const finalHreflangs = hreflangs && hreflangs.length
+  ? hreflangs
+  : [
+      { hreflang: 'es-VE', href: effectiveCanonical },
+      { hreflang: 'x-default', href: effectiveCanonical }
+    ];
 ---
 <!doctype html>
 <html lang="es-VE">
@@ -48,23 +73,35 @@ const schemaPayload = schemaNodes.length
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="theme-color" content="#17211f" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
     <meta name="description" content={description} />
+    {keywords && <meta name="keywords" content={keywords} />}
     {noindex && <meta name="robots" content="noindex,nofollow" />}
-    <title>{fullTitle}</title>
-    {canonical && <link rel="canonical" href={canonical} />}
+    <title>{title}</title>
+    {effectiveCanonical && <link rel="canonical" href={effectiveCanonical} />}
+    {sitemapUrl && <link rel="sitemap" type="application/xml" title="Sitemap" href={sitemapUrl} />}
+    {finalHreflangs.map((h) => (
+      <link rel="alternate" hreflang={h.hreflang} href={h.href} />
+    ))}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta property="og:locale" content="es_VE" />
+    {ogLocaleAlternates.map((l) => <meta property="og:locale:alternate" content={l} />)}
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={fullTitle} />
+    <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    {canonical && <meta property="og:url" content={canonical} />}
+    {effectiveCanonical && <meta property="og:url" content={effectiveCanonical} />}
     {absoluteImage && <meta property="og:image" content={absoluteImage} />}
+    {absoluteImage && <meta property="og:image:alt" content={imageAlt} />}
     <meta property="og:site_name" content={siteInfo.name} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {absoluteImage && <meta name="twitter:image" content={absoluteImage} />}
+    {absoluteImage && <meta name="twitter:image:alt" content={imageAlt} />}
     <script type="application/ld+json" set:html={JSON.stringify(schemaPayload)}></script>
     <slot name="head" />
     <script is:inline define:vars={{ GA_ID: siteInfo.ga4 }}>
@@ -115,5 +152,12 @@ const schemaPayload = schemaNodes.length
       <slot />
     </main>
     <Footer />
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>

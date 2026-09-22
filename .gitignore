@@ -1,5 +1,36 @@
+# package manager / build
 node_modules/
+.pnpm-store/
 dist/
 .astro/
+coverage/
+
+# logs
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# env & secrets
+.env
+.env.*
+!.env.example
+.dev.vars
+.secrets/
+
+# Cloudflare Workers (manual deploy)
 .wrangler/
+wrangler.toml.local
+.cache/
+
+# OS / desktop
 .DS_Store
+Thumbs.db
+desktop.ini
+
+# editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

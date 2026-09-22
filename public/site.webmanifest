@@ -1,14 +1,74 @@
 {
-  "name": "Guía Plaza Venezuela",
+  "name": "Plaza Venezuela (Caracas) - Visitor Guide & Location",
   "short_name": "Plaza Venezuela",
-  "description": "Guía cultural y práctica independiente sobre Plaza Venezuela, Caracas.",
+  "description": "Official visitor guide to Plaza Venezuela in Caracas, Distrito Capital, Venezuela. Fountain schedules, directions, history and travel tips.",
   "lang": "es-VE",
+  "dir": "ltr",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "portrait-primary",
   "background_color": "#f4f0e7",
   "theme_color": "#17211f",
+  "categories": ["travel", "local", "education", "lifestyle"],
   "icons": [
-    { "src": "/favicons/favicon-32.png", "sizes": "32x32", "type": "image/png" },
-    { "src": "/favicons/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+    {
+      "src": "/favicons/favicon-16.png",
+      "sizes": "16x16",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicons/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Horarios y fuente",
+      "short_name": "Horarios",
+      "description": "Consultar horarios de la fuente y plaza",
+      "url": "/#visita",
+      "icons": [{ "src": "/favicons/favicon-32.png", "sizes": "32x32" }]
+    },
+    {
+      "name": "Cómo llegar",
+      "short_name": "Transporte",
+      "description": "Indicaciones de Metro, autobús y vehículo",
+      "url": "/#como-llegar",
+      "icons": [{ "src": "/favicons/favicon-32.png", "sizes": "32x32" }]
+    },
+    {
+      "name": "Mapa de ubicación",
+      "short_name": "Mapa",
+      "description": "Ver la ubicación exacta en el mapa",
+      "url": "/#mapa",
+      "icons": [{ "src": "/favicons/favicon-32.png", "sizes": "32x32" }]
+    },
+    {
+      "name": "Historia y arte",
+      "short_name": "Historia",
+      "description": "Contexto histórico y obras de arte cinético",
+      "url": "/#historia",
+      "icons": [{ "src": "/favicons/favicon-32.png", "sizes": "32x32" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/favicons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Guía Plaza Venezuela"
+    }
   ]
 }
