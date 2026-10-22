@@ -14,9 +14,16 @@
   function clearDeny(){
     // Verify this tab's refusal is clear before publishing a shared grant.
     sessionStorage.removeItem(DENY);
-    if(sessionStorage.getItem(DENY)==='1')throw Error('Session refusal remains');
+    if(sessionStorage.getItem(DENY)!==null)throw Error('Session refusal remains');
     window.name=window.name.split(MARK).join('');
     if(window.name.includes(MARK))throw Error('Tab refusal remains');
+  }
+  function rollbackGrant(){
+    try{
+      localStorage.setItem(KEY,JSON.stringify({necessary:true,analytics:false,preferences:false,marketing:false}));
+      if(JSON.parse(localStorage.getItem(KEY)||'null')?.analytics===false)return true;
+    }catch{}
+    try{localStorage.removeItem(KEY);return localStorage.getItem(KEY)===null;}catch{return false;}
   }
   function read(){
     if(denied())return null;
@@ -38,17 +45,25 @@
     window.gtag('js',new Date());window.gtag('config',ID,{allow_google_signals:false,allow_ad_personalization_signals:false});
   }
   const checkbox=document.getElementById('analytics'),status=document.getElementById('cookie-status');
-  let retainedDenial=false,effective=false;
+  let retainedDenial=false,effective=false,grantCleared=false;
   function refresh(){effective=read()?.analytics===true;apply(effective);if(checkbox)checkbox.checked=effective;}
   function save(analytics){
-    analytics=analytics===true;
+    analytics=analytics===true;grantCleared=false;
     if(!analytics){retainedDenial=markDeny();apply(false);}
     try{
       if(analytics){clearDeny();localStorage.getItem(KEY);localStorage.setItem(KEY+'-write-check','1');localStorage.removeItem(KEY+'-write-check');}
       localStorage.setItem(KEY,JSON.stringify({necessary:true,analytics,preferences:false,marketing:false}));
+      if(JSON.parse(localStorage.getItem(KEY)||'null')?.analytics!==analytics)throw Error('Choice not verified');
       if(analytics)window.__pvDenied=false;
-      refresh();return true;
-    }catch{retainedDenial=markDeny();refresh();return false;}
+      refresh();
+      if(analytics&&!effective)throw Error('Permission not effective');
+      return true;
+    }catch{
+      apply(false);
+      retainedDenial=markDeny();
+      if(analytics)grantCleared=rollbackGrant();
+      refresh();return false;
+    }
   }
   window.pvConsent={read,save};
   const unused=document.getElementById('preferences');if(unused){unused.checked=false;unused.disabled=true;}
@@ -56,9 +71,10 @@
   function choose(value){
     const stored=save(value);
     if(status)status.textContent=stored
-      ?effective?'Google Analytics está permitido en este navegador.':value?'Se escribió la elección, pero no pudo verificarse el almacenamiento. Google Analytics está desactivado en esta pestaña.':'Google Analytics se ha rechazado en este navegador.'
-      :retainedDenial?'Google Analytics está desactivado en esta pestaña; el rechazo se conservará al navegar por el sitio y recargarla. No se guardó la elección permanente; otras pestañas pueden conservar un permiso anterior. Puede borrar los datos del sitio desde el navegador.'
-      :'Google Analytics está desactivado en esta página. No se garantiza conservar el rechazo al navegar o recargar. Borre los datos del sitio desde el navegador para eliminar permisos anteriores.';
+      ?effective?'Google Analytics está permitido en esta pestaña.':'Google Analytics se ha rechazado en esta pestaña.'
+      :grantCleared?'Google Analytics está desactivado en esta pestaña. El permiso no verificado se ha rechazado o eliminado del almacenamiento. Revise estos ajustes antes de volver a permitirlo.'
+      :retainedDenial?'Google Analytics está desactivado en esta pestaña; el rechazo se conservará al navegar por el sitio y recargarla. No se guardó la elección permanente; puede quedar un permiso guardado que otras pestañas utilicen. Puede borrar los datos del sitio desde el navegador.'
+      :'Google Analytics está desactivado solo en esta página. Puede quedar un permiso guardado que otras pestañas utilicen. No se garantiza conservar el rechazo al navegar o recargar. Borre los datos del sitio desde el navegador para eliminar cualquier permiso guardado.';
   }
   document.getElementById('cookie-form')?.addEventListener('submit',event=>{event.preventDefault();choose(checkbox?.checked===true);});
   document.getElementById('reject-all')?.addEventListener('click',()=>choose(false));
