@@ -6,8 +6,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <div class="prose-page max-w-4xl">
       <p class="eyebrow text-leaf">Privacidad y control</p>
       <h1>Configuración de cookies</h1>
-      <p class="text-sm font-bold uppercase tracking-[.11em] text-black/45">Última actualización: agosto de 2026</p>
-      <p>Utilizamos el mínimo de almacenamiento necesario. Puede decidir si permite medición analítica o preferencias adicionales. No utilizamos cookies de marketing ni publicidad personalizada.</p>
+      <p class="text-sm font-bold uppercase tracking-[.11em] text-black/45">Última actualización: 22 de octubre de 2026</p>
+      <p>Utilizamos el mínimo de almacenamiento necesario. Puede decidir si permite Google Analytics. No se guardan otras preferencias de interfaz. No utilizamos cookies de marketing ni publicidad personalizada.</p>
     </div>
 
     <form id="cookie-form" class="mt-12 grid gap-5" aria-describedby="cookie-status">
@@ -15,7 +15,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <div>
           <p class="text-xs font-bold uppercase tracking-[.15em] text-black/45">Necesarias</p>
           <h2 class="mt-2 text-xl font-extrabold">Cookies necesarias</h2>
-          <p class="mt-2 max-w-2xl text-sm leading-7 text-black/60">Permiten funciones básicas de seguridad, entrega del sitio y almacenamiento local de su propia elección de consentimiento. No pueden desactivarse desde este panel.</p>
+          <p class="mt-2 max-w-2xl text-sm leading-7 text-black/60">La información del sitio puede leerse sin aceptar Analytics. Conservar la elección depende de que el navegador permita almacenamiento; este panel no controla todos los servicios externos.</p>
         </div>
         <span class="rounded-full bg-ink px-4 py-2 text-xs font-bold uppercase tracking-[.1em] text-white">Siempre activas</span>
       </section>
@@ -36,11 +36,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <div>
           <p class="text-xs font-bold uppercase tracking-[.15em] text-leaf">Preferencias</p>
           <h2 class="mt-2 text-xl font-extrabold">Preferencias del usuario</h2>
-          <p class="mt-2 max-w-2xl text-sm leading-7 text-black/60">Permite conservar configuraciones de interfaz que podamos incorporar, por ejemplo preferencias visuales. No utilizamos esta categoría para seguimiento publicitario.</p>
+          <p class="mt-2 max-w-2xl text-sm leading-7 text-black/60">No se guarda un tema ni una elección de idioma. Esta categoría no tiene una función activa y no solicita permiso.</p>
         </div>
         <label class="inline-flex cursor-pointer items-center gap-3 font-bold">
-          <input id="preferences" type="checkbox" class="h-5 w-5 accent-leaf" />
-          <span>Activar</span>
+          <input id="preferences" type="checkbox" disabled class="h-5 w-5 accent-leaf" />
+          <span>No utilizada</span>
         </label>
       </section>
 
@@ -62,48 +62,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     <div class="prose-page mt-14 max-w-4xl border-t border-black/10 pt-10">
       <h2>Control continuo</h2>
-      <p>Puede volver a esta página en cualquier momento para modificar su elección. También puede borrar el almacenamiento local y las cookies desde la configuración de su navegador. Desactivar una categoría opcional puede limitar únicamente las funciones asociadas a ella.</p>
-      <h2>Servicios externos</h2>
-      <p>El mapa integrado de Google y las imágenes documentales alojadas en Wikimedia Commons son recursos externos que pueden recibir datos técnicos necesarios para entregar el contenido. El control anterior se aplica a las categorías de almacenamiento que gestiona este sitio; no puede alterar las políticas propias de terceros.</p>
+      <p>Puede volver a esta página en cualquier momento para modificar su elección. También puede borrar el almacenamiento local y las cookies desde la configuración de su navegador. El rechazo desactiva también Analytics ya cargado. Si falla la escritura permanente, se intenta guardar un veto en la sesión o el nombre de esta pestaña. Si todo falla, solo se garantiza la desactivación en la página actual; otras pestañas pueden conservar un permiso anterior.</p>
+      <h2>Medición independiente del alojamiento</h2><p>Cloudflare Web Analytics puede incorporar un beacon para medir visitas y rendimiento de carga. Es independiente de Google Analytics: este control no lo desactiva. Un navegador, bloqueador o política de seguridad puede impedir la ejecución o el envío; la presencia del script no demuestra una entrega correcta. Consulte la <a href="https://developers.cloudflare.com/web-analytics/about/">documentación de Cloudflare</a>.</p><h2>Mapa y previsión meteorológica</h2><p>Google Maps se integra como recurso externo. Open-Meteo recibe solicitudes meteorológicas con las coordenadas predefinidas de la plaza; no se solicita su geolocalización. Sus conexiones no dependen de la elección de Google Analytics.</p>
+      <h2>Otros enlaces externos</h2>
+      <p>Las fotografías de la guía no requieren una conexión con Wikimedia para verse. Si abre un enlace de fuente, se aplicarán las condiciones de ese sitio. La elección anterior se aplica a Google Analytics.</p>
     </div>
   </section>
 
-  <script is:inline>
-    const CONSENT_KEY = 'pv-cookie-preferences';
-    const form = document.getElementById('cookie-form');
-    const analytics = document.getElementById('analytics');
-    const preferences = document.getElementById('preferences');
-    const status = document.getElementById('cookie-status');
-    const reject = document.getElementById('reject-all');
 
-    const read = () => {
-      try { return JSON.parse(localStorage.getItem(CONSENT_KEY) || '{}'); }
-      catch { return {}; }
-    };
-    const current = read();
-    analytics.checked = current.analytics === true;
-    preferences.checked = current.preferences === true;
-
-    const save = (data, message) => {
-      localStorage.setItem(CONSENT_KEY, JSON.stringify({
-        necessary: true,
-        analytics: data.analytics === true,
-        preferences: data.preferences === true,
-        marketing: false
-      }));
-      status.textContent = message;
-      window.dispatchEvent(new CustomEvent('pv-consent-updated', { detail: data }));
-    };
-
-    form.addEventListener('submit', (event) => {
-      event.preventDefault();
-      save({ analytics: analytics.checked, preferences: preferences.checked }, 'Preferencias guardadas en este navegador.');
-    });
-
-    reject.addEventListener('click', () => {
-      analytics.checked = false;
-      preferences.checked = false;
-      save({ analytics: false, preferences: false }, 'Se rechazaron todas las categorías opcionales.');
-    });
-  </script>
 </BaseLayout>

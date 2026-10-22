@@ -1,7 +1,0 @@
-# 全站 HTTP → HTTPS 与 www → 非 www 301 永久重定向
-# GSC 数据显示 http:// 版本仍获得 11 次搜索曝光，需 Cloudflare Workers/Pages 在边缘下发 301
-# 格式参考：https://developers.cloudflare.com/pages/configuration/redirects/
-
-http://plazavenezuela.org/*     https://plazavenezuela.org/:splat     301
-http://www.plazavenezuela.org/* https://plazavenezuela.org/:splat     301
-https://www.plazavenezuela.org/* https://plazavenezuela.org/:splat    301

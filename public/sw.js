@@ -1,4 +1,4 @@
-const CACHE_NAME = 'plaza-venezuela-cache-v1';
+const CACHE_NAME = 'plaza-venezuela-cache-v2';
 const PRECACHE_URLS = [
   '/',
   '/favicon.svg',
@@ -36,7 +36,7 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
 
   const url = new URL(request.url);
-  if (url.origin !== self.location.origin) return;
+  if (url.origin !== self.location.origin || url.pathname === '/consent.js') return;
 
   const isNavigation = request.mode === 'navigate';
   const isStaticAsset =
@@ -58,7 +58,7 @@ self.addEventListener('fetch', (event) => {
             return response;
           })
           .catch(() => cached || caches.match('/'));
-        return cached || networkFetch;
+        return networkFetch;
       })
     );
     return;

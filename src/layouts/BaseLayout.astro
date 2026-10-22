@@ -18,7 +18,7 @@ interface Props {
   sitemapUrl?: string;
 }
 
-const DEFAULT_OG_ALTERNATES = ['es_ES', 'es_MX', 'es_CO', 'es_AR', 'en_US'];
+const DEFAULT_OG_ALTERNATES: string[] = [];
 
 const {
   title = siteInfo.name,
@@ -34,6 +34,7 @@ const {
   sitemapUrl = 'https://plazavenezuela.org/sitemap-index.xml'
 } = Astro.props;
 
+const displayTitle = title.includes('Plaza Venezuela') ? title : title + ' | ' + siteInfo.name;
 const siteBase = Astro.site?.origin || 'https://plazavenezuela.org';
 const effectiveCanonical =
   canonicalProp ||
@@ -48,7 +49,8 @@ const webSiteNode = {
   name: siteInfo.name,
   description: siteInfo.description,
   inLanguage: 'es-VE',
-  ...(effectiveCanonical ? { url: effectiveCanonical } : {})
+  '@id': `${siteBase}/#website`,
+  url: `${siteBase}/`
 };
 
 const hasWebSiteNode = schemaNodes.some((node) => {
@@ -77,7 +79,7 @@ const finalHreflangs = hreflangs && hreflangs.length
     <meta name="description" content={description} />
     {keywords && <meta name="keywords" content={keywords} />}
     {noindex && <meta name="robots" content="noindex,nofollow" />}
-    <title>{title}</title>
+    <title>{displayTitle}</title>
     {effectiveCanonical && <link rel="canonical" href={effectiveCanonical} />}
     {sitemapUrl && <link rel="sitemap" type="application/xml" title="Sitemap" href={sitemapUrl} />}
     {finalHreflangs.map((h) => (
@@ -91,47 +93,20 @@ const finalHreflangs = hreflangs && hreflangs.length
     <meta property="og:locale" content="es_VE" />
     {ogLocaleAlternates.map((l) => <meta property="og:locale:alternate" content={l} />)}
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
+    <meta property="og:title" content={displayTitle} />
     <meta property="og:description" content={description} />
     {effectiveCanonical && <meta property="og:url" content={effectiveCanonical} />}
     {absoluteImage && <meta property="og:image" content={absoluteImage} />}
     {absoluteImage && <meta property="og:image:alt" content={imageAlt} />}
     <meta property="og:site_name" content={siteInfo.name} />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
+    <meta name="twitter:title" content={displayTitle} />
     <meta name="twitter:description" content={description} />
     {absoluteImage && <meta name="twitter:image" content={absoluteImage} />}
     {absoluteImage && <meta name="twitter:image:alt" content={imageAlt} />}
-    <script type="application/ld+json" set:html={JSON.stringify(schemaPayload)}></script>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaPayload)}></script>
     <slot name="head" />
-    <script is:inline define:vars={{ GA_ID: siteInfo.ga4 }}>
-      const CONSENT_KEY = 'pv-cookie-preferences';
-      const loadAnalytics = () => {
-        window['ga-disable-' + GA_ID] = false;
-        if (document.querySelector('script[data-pv-ga]')) return;
-        const script = document.createElement('script');
-        script.async = true;
-        script.dataset.pvGa = 'true';
-        script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
-        document.head.appendChild(script);
-        window.dataLayer = window.dataLayer || [];
-        window.gtag = function(){ window.dataLayer.push(arguments); };
-        window.gtag('js', new Date());
-        window.gtag('config', GA_ID, { anonymize_ip: true });
-      };
-      const readConsent = () => {
-        try { return JSON.parse(localStorage.getItem(CONSENT_KEY) || '{}'); }
-        catch { return {}; }
-      };
-      const initialConsent = readConsent();
-      window['ga-disable-' + GA_ID] = initialConsent.analytics !== true;
-      if (initialConsent.analytics === true) loadAnalytics();
-      window.addEventListener('pv-consent-updated', (event) => {
-        const enabled = event.detail?.analytics === true;
-        window['ga-disable-' + GA_ID] = !enabled;
-        if (enabled) loadAnalytics();
-      });
-    </script>
+    <script is:inline src="/consent.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#contenido">Saltar al contenido</a>

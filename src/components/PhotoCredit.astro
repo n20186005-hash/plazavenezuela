@@ -1,0 +1,11 @@
+---
+import { siteInfo } from '../data/site';
+type Photo = (typeof siteInfo.photos)[keyof typeof siteInfo.photos];
+interface Props { photo: Photo; }
+const { photo } = Astro.props;
+---
+<p class="photo-credit">
+  <a href={photo.sourceUrl} rel="noreferrer">{photo.title}</a> — {photo.author} · {photo.date} ·
+  <a href={photo.licenseUrl} rel="noreferrer">{photo.license}</a>.
+  Archivo original sin modificaciones; el encuadre puede verse recortado en pantalla. La imagen histórica no acredita las condiciones actuales.
+</p>

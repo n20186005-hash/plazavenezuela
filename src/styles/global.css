@@ -76,3 +76,22 @@ img { display: block; max-width: 100%; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
 }
+
+.photo-credit { margin-top: 1rem; font-size: .75rem; line-height: 1.75; overflow-wrap: anywhere; opacity: .88; }
+.photo-credit a { text-decoration: underline; text-underline-offset: 3px; }
+.pv-hero .photo-credit { position: relative; max-width: 70rem; color: #fff; }
+.pv-weather { margin-top: 1.5rem; }
+.pv-weather-time { font-size: .85rem; line-height: 1.7; }
+.pv-weather-now, .pv-weather-advice { padding: 1.5rem; margin-top: 1rem; background: #fff; border: 1px solid #17211f22; border-radius: 1.5rem; }
+.pv-weather-now > span { font-size: 2.5rem; margin-right: 1rem; }
+.pv-weather-now > strong { font-size: clamp(2.5rem, 8vw, 4.5rem); }
+.pv-weather-now p { margin-top: .7rem; line-height: 1.7; }
+.pv-weather-advice h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: .75rem; }
+.pv-weather-advice ul { list-style: disc; padding-left: 1.3rem; }
+.pv-weather-advice li { margin-top: .5rem; line-height: 1.7; }
+.pv-weather-scroll { margin-top: 1rem; max-width: 100%; overflow-x: auto; background: #fff; border-radius: 1.5rem; border: 1px solid #17211f22; }
+.pv-weather-table { width: 100%; min-width: 650px; border-collapse: collapse; font-size: .85rem; }
+.pv-weather-table caption { text-align: left; padding: 1rem; font-weight: 800; }
+.pv-weather-table th, .pv-weather-table td { padding: .85rem; text-align: left; border-top: 1px solid #17211f22; }
+.pv-weather-table thead { background: #f4f0e7; }
+.pv-weather-empty { padding: 1.5rem; background: #fff; border: 1px solid #17211f22; border-radius: 1.5rem; }

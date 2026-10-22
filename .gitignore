@@ -34,3 +34,6 @@ desktop.ini
 *.swp
 *.swo
 *~
+
+# Keep private diagnostic working notes outside publication.
+.trae/specs/gsc-seo-optimize/
