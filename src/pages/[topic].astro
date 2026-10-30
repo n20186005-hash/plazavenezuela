@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import TopicPage from '../components/TopicPage.astro';
+import { siteInfo } from '../data/site';
+import { getTopic, topicSlugs } from '../data/topics';
+import { topicJsonLd } from '../lib/seo';
+
+export function getStaticPaths() {
+  return topicSlugs().map((slug) => ({ params: { topic: slug } }));
+}
+
+const slug = Astro.params.topic as string;
+const topic = getTopic(slug);
+if (!topic || !topic.content) return Astro.redirect('/404');
+
+const c = topic.content;
+const siteBase = Astro.site!.origin;
+const canonical = `${siteBase}/${topic.slug}/`;
+const jsonLd = topicJsonLd(siteBase, topic, canonical);
+const image = c.photo ? siteInfo.photos[c.photo].src : siteInfo.photos.panorama.src;
+const imageAlt = c.photo ? siteInfo.photos[c.photo].alt : siteInfo.photos.panorama.alt;
+---
+<BaseLayout
+  title={c.metaTitle}
+  description={c.metaDescription}
+  canonical={canonical}
+  image={image}
+  imageAlt={imageAlt}
+  structuredData={jsonLd}
+>
+  <TopicPage topic={topic} />
+</BaseLayout>

@@ -4,6 +4,7 @@ import { siteInfo } from '../data/site';
 import { faqs, seasonalTableRows } from '../data/visitor';
 import Weather from '../components/Weather.astro';
 import PhotoCredit from '../components/PhotoCredit.astro';
+import TopicLinks from '../components/TopicLinks.astro';
 const siteUrl = Astro.site!.origin;
 const attractionId = `${siteUrl}/#attraction`;
 const attractionSchema = {
@@ -589,6 +590,8 @@ Guarda una referencia de ubicación y tus contactos de asistencia. No se ha comp
       <article class="border border-black/10 bg-white p-7"><h3 class="font-extrabold text-lg">Fundación Fondo Andrés Bello, UCV</h3><p class="mt-3 text-sm leading-7">Documentación del entorno Zona Rental y sus conexiones urbanas. No acredita el servicio del Metro ni la accesibilidad en una fecha concreta.</p><a class="mt-4 inline-block underline" href="https://ffabucv.org/zona-rental-plaza-venezuela/">Leer la documentación</a> · <a class="underline" href="https://www.metrodecaracas.gob.ve/">Consultar al Metro</a></article>
     </div>
   </section>
+
+  <TopicLinks />
 
   <section class="site-shell pb-10">
     <div class="grid gap-8 border-y border-black/12 py-9 text-xs leading-6 text-black/50 md:grid-cols-[1fr_1fr_1fr]">

@@ -6,7 +6,13 @@ const SITE_URL = 'https://plazavenezuela.org';
 
 export default defineConfig({
   site: SITE_URL || undefined,
-  integrations: SITE_URL ? [sitemap()] : [],
+  integrations: SITE_URL
+    ? [
+        sitemap({
+          filter: (page) => !/(privacidad|terminos|cookies)\/?$/.test(page)
+        })
+      ]
+    : [],
   vite: {
     plugins: [tailwindcss()]
   }

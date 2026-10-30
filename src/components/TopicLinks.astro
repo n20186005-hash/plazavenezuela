@@ -1,0 +1,44 @@
+---
+import { TOPICS, TOPIC_GROUP_LABELS, TOPIC_GROUP_ORDER, type TopicGroup } from '../data/topics';
+
+const siteBase = Astro.site?.origin || 'https://plazavenezuela.org';
+
+const readyByGroup = (group: TopicGroup) =>
+  TOPICS.filter((t) => t.group === group && t.ready && t.content);
+
+const groups = TOPIC_GROUP_ORDER.map((group) => ({
+  group,
+  label: TOPIC_GROUP_LABELS[group],
+  topics: readyByGroup(group)
+})).filter((g) => g.topics.length > 0);
+---
+
+<section id="guias" class="site-shell py-24">
+  <div class="flex flex-col justify-between gap-7 lg:flex-row lg:items-end">
+    <div class="max-w-3xl">
+      <span class="eyebrow text-coral">Guías temáticas</span>
+      <h2 class="display mt-5 text-[clamp(2.8rem,5.5vw,5.4rem)]">Explora por tema</h2>
+      <p class="mt-6 text-lg leading-8 text-black/62">
+        Guías independientes sobre la historia, el arte, el transporte y los alrededores de Plaza Venezuela. Cada una profundiza más que la página principal y enlaza con las demás.
+      </p>
+    </div>
+    <p class="max-w-md text-sm leading-7 text-black/55">Las páginas se organizan por categoría; el resto del plan editorial se publica por fases según la verificación de cada tema.</p>
+  </div>
+
+  <div class="mt-14 space-y-14">
+    {groups.map((g) => (
+      <div>
+        <h3 class="display mb-6 text-2xl text-cobalt">{g.label}</h3>
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {g.topics.map((t) => (
+            <a href={`${siteBase}/${t.slug}/`} class="group border border-black/10 bg-white p-6 transition hover:border-cobalt">
+              <h4 class="display text-xl">{t.title}</h4>
+              <p class="mt-3 text-sm leading-6 text-black/58">{t.metaDescription}</p>
+              <span class="mt-4 inline-block text-sm font-bold text-cobalt group-hover:underline">Leer guía →</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>

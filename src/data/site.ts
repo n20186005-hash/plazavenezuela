@@ -16,7 +16,7 @@ export const siteInfo = {
   latitude: 10.4967156,
   longitude: -66.8858385,
   rating: 4.2,
-  ratingCount: 35609,
+  ratingCount: 35687,
   hours: '06:00–21:00',
   phone: '+582122046900',
   ga4: 'G-HXM22WWPKP',
